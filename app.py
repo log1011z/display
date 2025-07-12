@@ -1,6 +1,9 @@
-from flask import Flask, render_template, request, jsonify
+from Demos.win32ts_logoff_disconnected import username
+from flask import Flask, render_template, request, jsonify,session
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+import requests
+from scipy.spatial.distance import cityblock
 from sqlalchemy import text,func
 
 app = Flask(__name__)
@@ -12,7 +15,7 @@ PASSWORD = '110110'
 DATABASE = 'display'
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4'
 db= SQLAlchemy(app)
-
+app.secret_key = '6ragonPa5ace1n'
 
 
 
@@ -39,17 +42,40 @@ class crop(db.Model):
 class user(db.Model):
     __tablename__ = 'user'
     uid = db.Column(db.Integer, primary_key=True)
-    uname = db.Column(db.String(20), nullable=False)
-    upwd = db.Column(db.String(20), nullable=False)
-    utype = db.Column(db.String(10), nullable=False)
+    username = db.Column(db.String(20), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+    anth = db.Column(db.Integer, nullable=False)
 @app.route('/')
-def hello_world():  # put application's code here
-    return 'Hello World!'
-
+def index():  # put application's code here
+    return render_template('login.html')
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('error-404.html'), 404
 @app.route('/login', methods=['POST'])
 def login():
-
-
+    res = request.get_json()
+    username = res.get('username')
+    password = res.get('password')
+    print(username, password)
+    with app.app_context():
+        with db.engine.connect() as conn:
+            user_info = db.session.query(user).filter(user.username == username, user.password == password).first()
+            db.session.close()
+        if user_info:
+            session['logged_in'] = True
+            session['username'] = username
+            session['uid'] = user_info.uid
+            session['role'] = user_info.anth
+            return jsonify({'status': 'success', 'message': '登录成功!',
+                            'uid': user_info.uid, 'utype': user_info.anth})
+        return jsonify({'status': 'error', 'message': '登录失败.'})
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('logged_in', None)
+    session.pop('username', None)
+    session.pop('uid', None)
+    session.pop('role', None)
+    return jsonify({'status': 'success', 'message': '登出成功.'})
 @app.route('/get_weather', methods=['GET'])
 def get_weather():
     with app.app_context():
@@ -80,5 +106,17 @@ def get_crop():
             'output': [i.output for i in r],
             'price': [i.price for i in r],
     })
+@app.route('/get_temp', methods=[ 'GET'])
+def get_temp():
+    url = "https://weather.cma.cn/api/now/54662"
+    ua = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0',
+        'Referer': 'https://weather.cma.cn/',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+    }
+    response = requests.get(url=url, headers=ua)
+    response.encoding = 'utf-8'
+    data = response.json()
+    return jsonify(data)
 if __name__ == '__main__':
     app.run()
