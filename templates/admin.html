@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>AgriSage 后台管理</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/styles.css')}}">
+    <link href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css" rel="stylesheet">
+    <script src="{{ url_for('static',filename='js/sweetalert2.js')}}"></script>
+    <script>
+        // 用户账号管理功能
+        let users = [];
+        
+        // 添加用户
+        function addUser() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                swal('错误', '用户名和密码不能为空', 'error');
+                return;
+            }
+            
+            users.push({username, password});
+            swal('成功', '用户添加成功', 'success');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            listUsers();
+        }
+        
+        // 删除用户
+        function deleteUser() {
+            const username = document.getElementById('username').value;
+            
+            if (!username) {
+                swal('错误', '请输入要删除的用户名', 'error');
+                return;
+            }
+            
+            const index = users.findIndex(u => u.username === username);
+            if (index === -1) {
+                swal('错误', '用户不存在', 'error');
+                return;
+            }
+            
+            users.splice(index, 1);
+            swal('成功', '用户删除成功', 'success');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            listUsers();
+        }
+        
+        // 修改密码
+        function updateUser() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                swal('错误', '用户名和新密码不能为空', 'error');
+                return;
+            }
+            
+            const user = users.find(u => u.username === username);
+            if (!user) {
+                swal('错误', '用户不存在', 'error');
+                return;
+            }
+            
+            user.password = password;
+            swal('成功', '密码修改成功', 'success');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            listUsers();
+        }
+        
+        // 查看用户列表
+        function listUsers() {
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '<h4>用户列表</h4>';
+            
+            if (users.length === 0) {
+                userList.innerHTML += '<p>暂无用户</p>';
+                return;
+            }
+            
+            users.forEach(user => {
+                userList.innerHTML += 
+                    `<div style="margin-bottom: 5px;">
+                        <span style="font-weight: bold;">${user.username}</span>
+                        <span style="margin-left: 10px;">密码: ${'*'.repeat(user.password.length)}</span>
+                    </div>`;
+            });
+        }
+    </script>
+    
+    <style>
+        body {
+            background: url("{{url_for('static',filename='img/bg7.jpg')}}") no-repeat center center fixed;
+            background-size: cover;
+        }
+        .admin-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: rgba(255,255,255,0.85);
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+            padding: 36px 32px 32px 32px;
+        }
+        .admin-title {
+            font-size: 2.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #228b22;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #b7eb8f 0%, #52c41a 50%, #e8f5e8 100%);
+            border-radius: 12px;
+            padding: 12px 0;
+            box-shadow: 0 2px 8px rgba(34,139,34,0.08);
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .admin-table th, .admin-table td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .admin-table th {
+            background: #e8f5e8;
+            color: #228b22;
+            font-size: 1.1rem;
+        }
+        .admin-table tr:last-child td {
+            border-bottom: none;
+        }
+        .admin-btn {
+            background: linear-gradient(90deg, #52c41a 0%, #b7eb8f 100%);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 16px;
+            margin: 0 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .admin-btn:hover {
+            background: linear-gradient(90deg, #228b22 0%, #95de64 100%);
+        }
+        .admin-form {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .admin-form input, .admin-form select {
+            padding: 6px 10px;
+            border: 1px solid #b7eb8f;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .admin-form label {
+            font-weight: 500;
+            color: #228b22;
+        }
+        .tab-group {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #f0f0f0;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background 0.3s, color 0.3s;
+            color: #333;
+        }
+        .tab-btn:hover {
+            background: #e0e0e0;
+        }
+        .tab-btn.active {
+            background: linear-gradient(90deg, #52c41a 0%, #b7eb8f 100%);
+            color: #fff;
+        }
+        .date-select-group {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .showtime {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            color: #228b22;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        .tab-content {
+            display: block; /* Default to block */
+        }
+        .crop-type-section {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .crop-type-list {
+            margin-top: 15px;
+        }
+        .crop-type-list h4 {
+            margin-bottom: 10px;
+        }
+        .crop-type-list div {
+            background: #e8f5e8;
+            color: #228b22;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .db-config-section {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .db-config-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .config-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .config-row label {
+            flex: 1;
+            font-weight: 500;
+            color: #228b22;
+        }
+        .config-row input[type="text"], .config-row input[type="number"], .config-row select {
+            padding: 6px 10px;
+            border: 1px solid #b7eb8f;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .config-row button {
+            padding: 6px 16px;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 600px) {
+            .admin-container { padding: 10px; }
+            .admin-title { font-size: 1.2rem; }
+            .tab-group { flex-direction: column; }
+            .tab-btn { width: 100%; padding: 8px 15px; }
+            .admin-table th, .admin-table td { padding: 6px 2px; font-size: 0.9rem; }
+            .admin-form { flex-direction: column; gap: 6px; }
+            .config-row { flex-direction: column; align-items: flex-start; }
+            .config-row label { width: 100%; text-align: left; }
+            .config-row input[type="text"], .config-row input[type="number"], .config-row select { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 实时时间显示 -->
+    <div class="showtime" id="showtime"></div>
+    
+    <div class="admin-container">
+        <div class="admin-title">🌾 AgriSage 后台管理 🌾</div>
+        
+        <!-- 数据库连接配置窗口 -->
+        <div class="db-config-section">
+            <h3 style="color: #228b22; margin-bottom: 15px;">🔗 数据库连接配置</h3>
+            <div class="db-config-form">
+                <div class="config-row">
+                    <label>数据库类型：
+                        <select id="dbType">
+                            <option value="mysql">MySQL</option>
+                        </select>
+                    </label>
+                    <label>主机地址：<input type="text" id="dbHost" value="localhost" placeholder="localhost"></label>
+                    <label>端口：<input type="number" id="dbPort" value="3306" placeholder="3306"></label>
+                </div>
+                <div class="config-row">
+                    <label>数据库名：<input type="text" id="dbName" value="myollama" placeholder="myollama"></label>
+                    <label>用户名：<input type="text" id="dbUser" value="root" placeholder="root"></label>
+                    <label>密码：<input type="password" id="dbPassword" placeholder="请输入密码"></label>
+                </div>
+                <div class="config-row">
+                    <button class="admin-btn" onclick="testDbConnection()">测试连接</button>
+                    <button class="admin-btn" onclick="saveDbConfig()">保存配置</button>
+                    <button class="admin-btn" onclick="toggleStorageMode()">切换存储模式</button>
+                    <span id="connectionStatus" style="margin-left: 10px; font-weight: bold;"></span>
+                </div>
+                <div class="config-row" style="justify-content: center; margin-top: 10px;">
+                    <span class="mode-label">当前存储模式：</span>
+                    <span id="storageModeDisplay" class="mode-value"></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 用户账号管理模块 -->
+        <div class="db-config-section" style="margin-top: 20px;">
+            <h3 style="color: #228b22; margin-bottom: 15px;">👥 用户账号管理</h3>
+            <div class="db-config-form">
+                <div class="config-row">
+                    <label>用户名：<input type="text" id="username" placeholder="请输入用户名"></label>
+                    <label>密码：<input type="password" id="password" placeholder="请输入密码"></label>
+                </div>
+                <div class="config-row">
+                    <button class="admin-btn" onclick="addUser()">添加用户</button>
+                    <button class="admin-btn" onclick="deleteUser()">删除用户</button>
+                    <button class="admin-btn" onclick="updateUser()">修改密码</button>
+                    <button class="admin-btn" onclick="listUsers()">查看用户</button>
+                </div>
+                <div class="config-row" style="margin-top: 10px;">
+                    <div id="userList" style="width: 100%; border: 1px solid #ddd; padding: 10px; min-height: 100px;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-group">
+            <button class="tab-btn active" data-tab="province">省份农业数据</button>
+            <button class="tab-btn" data-tab="sensor">传感器数据</button>
+            <button class="tab-btn" data-tab="product">价格与销量</button>
+        </div>
+        <div class="date-select-group">
+            <label>选择日期：<input type="date" id="datePicker"></label>
+        </div>
+        <div id="tab-province" class="tab-content active">
+            <!-- 作物类型管理 -->
+            <div class="crop-type-section">
+                <h3 style="color: #228b22; margin-bottom: 15px;">🌱 作物类型管理</h3>
+                <form class="admin-form" id="cropTypeForm" style="margin-bottom: 20px;">
+                    <label>新增作物类型：<input type="text" id="newCropType" placeholder="请输入作物类型名称" required></label>
+                    <button type="submit" class="admin-btn">添加作物类型</button>
+                </form>
+                <div class="crop-type-list">
+                    <h4 style="color: #52c41a; margin-bottom: 10px;">当前作物类型：</h4>
+                    <div id="cropTypeList" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;"></div>
+                </div>
+            </div>
+            
+            <!-- 省份农业数据表单和表格（原有内容） -->
+            <h3 style="color: #228b22; margin-bottom: 15px;">🗺️ 省份农业数据</h3>
+            <form class="admin-form" id="addForm">
+                <label>省份：
+                    <select id="province" required>
+                        <option value="">请选择省份</option>
+                        <option value="北京">北京</option>
+                        <option value="天津">天津</option>
+                        <option value="河北">河北</option>
+                        <option value="山西">山西</option>
+                        <option value="内蒙古">内蒙古</option>
+                        <option value="辽宁">辽宁</option>
+                        <option value="吉林">吉林</option>
+                        <option value="黑龙江">黑龙江</option>
+                        <option value="上海">上海</option>
+                        <option value="江苏">江苏</option>
+                        <option value="浙江">浙江</option>
+                        <option value="安徽">安徽</option>
+                        <option value="福建">福建</option>
+                        <option value="江西">江西</option>
+                        <option value="山东">山东</option>
+                        <option value="河南">河南</option>
+                        <option value="湖北">湖北</option>
+                        <option value="湖南">湖南</option>
+                        <option value="广东">广东</option>
+                        <option value="广西">广西</option>
+                        <option value="海南">海南</option>
+                        <option value="重庆">重庆</option>
+                        <option value="四川">四川</option>
+                        <option value="贵州">贵州</option>
+                        <option value="云南">云南</option>
+                        <option value="西藏">西藏</option>
+                        <option value="陕西">陕西</option>
+                        <option value="甘肃">甘肃</option>
+                        <option value="青海">青海</option>
+                        <option value="宁夏">宁夏</option>
+                        <option value="新疆">新疆</option>
+                    </select>
+                </label>
+                <label>作物类型：
+                    <select id="cropType">
+                        <option value="粮食">粮食</option>
+                        <option value="蔬菜">蔬菜</option>
+                        <option value="水果">水果</option>
+                        <option value="油料">油料</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </label>
+                <label>产量(吨)：<input type="number" id="output" min="0" max="10000" step="0.1" required></label>
+                <button type="submit" class="admin-btn">添加/更新</button>
+            </form>
+            <table class="admin-table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>省份</th>
+                        <th>作物类型</th>
+                        <th>产量(吨)</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="tab-sensor" class="tab-content" style="display:none">
+            <!-- 传感器数据管理内容 -->
+            <form class="admin-form" id="sensorForm">
+                <label>温度(℃)：<input type="number" id="temp" step="0.1" min="-50" max="100" placeholder="-50到100"></label>
+                <label>湿度(%)：<input type="number" id="humidity" step="0.1" min="0" max="100" placeholder="0到100"></label>
+                <label>光照(lux)：<input type="number" id="sunlight" step="1" min="0" max="10000" placeholder="0到10000"></label>
+                <label>土壤1层(%)：<input type="number" id="soil1" step="0.1" min="0" max="100" placeholder="0到100"></label>
+                <label>土壤2层(%)：<input type="number" id="soil2" step="0.1" min="0" max="100" placeholder="0到100"></label>
+                <label>土壤3层(%)：<input type="number" id="soil3" step="0.1" min="0" max="100" placeholder="0到100"></label>
+                <button type="submit" class="admin-btn">添加/更新</button>
+            </form>
+            <table class="admin-table" id="sensorTable">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>温度(℃)</th>
+                        <th>湿度(%)</th>
+                        <th>光照(lux)</th>
+                        <th>土壤1层(%)</th>
+                        <th>土壤2层(%)</th>
+                        <th>土壤3层(%)</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="tab-product" class="tab-content" style="display:none">
+            <!-- 价格与销量管理内容 -->
+            <form class="admin-form" id="productForm">
+                <label>农产品：
+                    <select id="productName" required>
+                        <option value="">请选择农产品</option>
+                        <option value="水稻">水稻</option>
+                        <option value="小麦">小麦</option>
+                        <option value="玉米">玉米</option>
+                        <option value="大豆">大豆</option>
+                        <option value="蔬菜">蔬菜</option>
+                        <option value="水果">水果</option>
+                    </select>
+                </label>
+                <label>价格(元/斤)：<input type="number" id="price" step="0.1" min="0.1" max="20" required></label>
+                <label>销量(吨)：<input type="number" id="sales" step="0.1" min="1" max="5000" required></label>
+                <label>产量(吨)：<input type="number" id="yield" step="0.1" min="1" max="5000" required></label>
+                <label>收成天数：<input type="number" id="harvestDays" step="1" min="30" max="300" required></label>
+                <button type="submit" class="admin-btn">添加/更新</button>
+            </form>
+            <table class="admin-table" id="productTable">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>农产品</th>
+                        <th>价格(元/斤)</th>
+                        <th>销量(吨)</th>
+                        <th>产量(吨)</th>
+                        <th>收成天数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        // 本地存储key
+        const STORAGE_KEY = 'agri_province_data';
+        const SENSOR_STORAGE_KEY = 'agri_sensor_data';
+        const PRODUCT_STORAGE_KEY = 'agri_product_data';
+        
+        // 默认数据
+        const defaultData = [
+            {name: '北京', type: '粮食', output: 1200},
+            {name: '天津', type: '蔬菜', output: 800},
+            {name: '河北', type: '粮食', output: 1500},
+            {name: '山西', type: '油料', output: 600},
+            {name: '内蒙古', type: '粮食', output: 900}
+        ];
+        
+        // 默认传感器数据
+        const defaultSensorData = {
+            '2024-12-01': {temp: 25, humidity: 65, sunlight: 1000, soil1: 20, soil2: 18, soil3: 15},
+            '2024-12-02': {temp: 27, humidity: 72, sunlight: 1200, soil1: 22, soil2: 19, soil3: 16},
+            '2024-12-03': {temp: 23, humidity: 68, sunlight: 1500, soil1: 21, soil2: 20, soil3: 17}
+        };
+        
+        // 默认价格销量数据
+        const defaultProductData = {
+            '2024-12-01': [
+                {name: '水稻', price: 2.5, sales: 1200, yield: 1500, harvestDays: 120},
+                {name: '小麦', price: 2.8, sales: 800, yield: 1000, harvestDays: 110},
+                {name: '玉米', price: 2.2, sales: 1500, yield: 1800, harvestDays: 100},
+                {name: '大豆', price: 3.5, sales: 600, yield: 800, harvestDays: 130},
+                {name: '蔬菜', price: 1.8, sales: 2000, yield: 2500, harvestDays: 60},
+                {name: '水果', price: 4.2, sales: 900, yield: 1200, harvestDays: 180}
+            ]
+        };
+        
+        // 获取数据
+        function getData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : defaultData;
+        }
+        
+        // 获取传感器数据
+        function getSensorData() {
+            const data = localStorage.getItem(SENSOR_STORAGE_KEY);
+            return data ? JSON.parse(data) : defaultSensorData;
+        }
+        
+        // 获取价格销量数据
+        function getProductData() {
+            const data = localStorage.getItem(PRODUCT_STORAGE_KEY);
+            return data ? JSON.parse(data) : defaultProductData;
+        }
+        
+        // 保存数据
+        function saveData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+        
+        // 保存传感器数据
+        function saveSensorData(data) {
+            localStorage.setItem(SENSOR_STORAGE_KEY, JSON.stringify(data));
+        }
+        
+        // 保存价格销量数据
+        function saveProductData(data) {
+            localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(data));
+        }
+        
+        // 渲染表格
+        function renderTable() {
+            if (DB_CONFIG.storageMode === 'database') {
+                // 数据库模式：从API获取数据
+                DB_API.getCropData().then(data => {
+                    if (data && Array.isArray(data)) {
+                        const tbody = document.querySelector('#dataTable tbody');
+                        tbody.innerHTML = '';
+                        data.forEach((item, idx) => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${item.type}</td>
+                                <td>${item.type}</td>
+                                <td>${item.output || 0}</td>
+                                <td>
+                                    <button class="admin-btn" onclick="editRow('${item.type}')">编辑</button>
+                                    <button class="admin-btn" onclick="deleteRow('${item.type}')">删除</button>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                }).catch(error => {
+                    console.error('获取数据失败:', error);
+                    // 失败时使用本地存储
+                    renderLocalTable();
+                });
+            } else {
+                // 本地存储模式
+                renderLocalTable();
+            }
+        }
+        
+        function renderLocalTable() {
+            const data = getData();
+            const tbody = document.querySelector('#dataTable tbody');
+            tbody.innerHTML = '';
+            data.forEach((item, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.type}</td>
+                    <td>${item.output}</td>
+                    <td>
+                        <button class="admin-btn" onclick="editRow(${idx})">编辑</button>
+                        <button class="admin-btn" onclick="deleteRow(${idx})">删除</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // 渲染传感器表格
+        function renderSensorTable() {
+            const selectedDate = document.getElementById('datePicker').value;
+            const tbody = document.querySelector('#sensorTable tbody');
+            tbody.innerHTML = '';
+            
+            if (DB_CONFIG.storageMode === 'database') {
+                // 数据库模式：从API获取数据
+                DB_API.getWeatherData(selectedDate).then(data => {
+                    if (data && data[selectedDate]) {
+                        const item = data[selectedDate];
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${selectedDate}</td>
+                            <td>${item.temp || '--'}</td>
+                            <td>${item.wet || '--'}</td>
+                            <td>${item.sun || '--'}</td>
+                            <td>${item.tsoil1 || '--'}</td>
+                            <td>${item.tsoil2 || '--'}</td>
+                            <td>${item.tsoil3 || '--'}</td>
+                            <td>
+                                <button class="admin-btn" onclick="editSensorRow()">编辑</button>
+                                <button class="admin-btn" onclick="deleteSensorRow()">删除</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
+                }).catch(error => {
+                    console.error('获取传感器数据失败:', error);
+                    // 失败时使用本地存储
+                    renderLocalSensorTable();
+                });
+            } else {
+                // 本地存储模式
+                renderLocalSensorTable();
+            }
+        }
+        
+        function renderLocalSensorTable() {
+            const data = getSensorData();
+            const selectedDate = document.getElementById('datePicker').value;
+            const tbody = document.querySelector('#sensorTable tbody');
+            tbody.innerHTML = '';
+            
+            if (data[selectedDate]) {
+                const item = data[selectedDate];
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${selectedDate}</td>
+                    <td>${item.temp || '--'}</td>
+                    <td>${item.humidity || '--'}</td>
+                    <td>${item.sunlight || '--'}</td>
+                    <td>${item.soil1 || '--'}</td>
+                    <td>${item.soil2 || '--'}</td>
+                    <td>${item.soil3 || '--'}</td>
+                    <td>
+                        <button class="admin-btn" onclick="editSensorRow()">编辑</button>
+                        <button class="admin-btn" onclick="deleteSensorRow()">删除</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+        
+        // 渲染价格销量表格
+        function renderProductTable() {
+            const data = getProductData();
+            const selectedDate = document.getElementById('datePicker').value;
+            const tbody = document.querySelector('#productTable tbody');
+            tbody.innerHTML = '';
+            
+            if (data[selectedDate]) {
+                data[selectedDate].forEach((item, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${selectedDate}</td>
+                        <td>${item.name}</td>
+                        <td>${item.price}</td>
+                        <td>${item.sales}</td>
+                        <td>${item.yield}</td>
+                        <td>${item.harvestDays}</td>
+                        <td>
+                            <button class="admin-btn" onclick="editProductRow(${idx})">编辑</button>
+                            <button class="admin-btn" onclick="deleteProductRow(${idx})">删除</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+        
+        // 产量验证函数
+        function validateOutput(output, province, cropType) {
+            // 根据省份和作物类型设置合理的产量范围
+            const ranges = {
+                '粮食': { min: 100, max: 3000 },
+                '蔬菜': { min: 50, max: 2000 },
+                '水果': { min: 30, max: 1500 },
+                '油料': { min: 20, max: 800 },
+                '其他': { min: 10, max: 1000 }
+            };
+            
+            // 特殊省份的产量范围调整
+            const provinceAdjustments = {
+                '北京': { factor: 0.3 }, // 直辖市产量相对较低
+                '天津': { factor: 0.3 },
+                '上海': { factor: 0.3 },
+                '重庆': { factor: 0.4 },
+                '西藏': { factor: 0.2 }, // 高海拔地区产量较低
+                '青海': { factor: 0.3 },
+                '新疆': { factor: 0.5 },
+                '内蒙古': { factor: 0.6 },
+                '黑龙江': { factor: 1.2 }, // 农业大省产量较高
+                '吉林': { factor: 1.1 },
+                '辽宁': { factor: 1.0 },
+                '山东': { factor: 1.3 },
+                '河南': { factor: 1.2 },
+                '四川': { factor: 1.1 },
+                '湖南': { factor: 1.0 },
+                '湖北': { factor: 1.0 },
+                '江苏': { factor: 1.1 },
+                '安徽': { factor: 1.0 },
+                '江西': { factor: 0.9 },
+                '浙江': { factor: 0.8 },
+                '福建': { factor: 0.7 },
+                '广东': { factor: 0.8 },
+                '广西': { factor: 0.8 },
+                '海南': { factor: 0.4 },
+                '云南': { factor: 0.7 },
+                '贵州': { factor: 0.6 },
+                '陕西': { factor: 0.8 },
+                '甘肃': { factor: 0.5 },
+                '宁夏': { factor: 0.4 },
+                '山西': { factor: 0.7 },
+                '河北': { factor: 1.0 }
+            };
+            
+            const range = ranges[cropType] || ranges['其他'];
+            const adjustment = provinceAdjustments[province] || { factor: 1.0 };
+            
+            const adjustedMin = range.min * adjustment.factor;
+            const adjustedMax = range.max * adjustment.factor;
+            
+            if (output < adjustedMin || output > adjustedMax) {
+                const message = `产量 ${output} 吨不符合实际情况！\n\n` +
+                              `建议范围：${adjustedMin.toFixed(1)} - ${adjustedMax.toFixed(1)} 吨\n` +
+                              `省份：${province}\n` +
+                              `作物类型：${cropType}`;
+                swal({
+                    title: "产量验证失败",
+                    text: `产量 ${output} 吨不符合实际情况！\n\n建议范围：${adjustedMin.toFixed(1)} - ${adjustedMax.toFixed(1)} 吨\n省份：${province}\n作物类型：${cropType}`,
+                    type: "warning",
+                    confirmButtonText: "确定"
+                });
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // 传感器数据验证函数
+        function validateSensorData(sensorData) {
+            const errors = [];
+            
+            // 温度验证 (-50到100℃)
+            if (sensorData.temp !== null && (sensorData.temp < -50 || sensorData.temp > 100)) {
+                errors.push(`温度 ${sensorData.temp}℃ 超出合理范围 (-50到100℃)`);
+            }
+            
+            // 湿度验证 (0到100%)
+            if (sensorData.humidity !== null && (sensorData.humidity < 0 || sensorData.humidity > 100)) {
+                errors.push(`湿度 ${sensorData.humidity}% 超出合理范围 (0到100%)`);
+            }
+            
+            // 光照验证 (0到10000lux)
+            if (sensorData.sunlight !== null && (sensorData.sunlight < 0 || sensorData.sunlight > 10000)) {
+                errors.push(`光照 ${sensorData.sunlight}lux 超出合理范围 (0到10000lux)`);
+            }
+            
+            // 土壤湿度验证 (0到100%)
+            if (sensorData.soil1 !== null && (sensorData.soil1 < 0 || sensorData.soil1 > 100)) {
+                errors.push(`土壤1层湿度 ${sensorData.soil1}% 超出合理范围 (0到100%)`);
+            }
+            if (sensorData.soil2 !== null && (sensorData.soil2 < 0 || sensorData.soil2 > 100)) {
+                errors.push(`土壤2层湿度 ${sensorData.soil2}% 超出合理范围 (0到100%)`);
+            }
+            if (sensorData.soil3 !== null && (sensorData.soil3 < 0 || sensorData.soil3 > 100)) {
+                errors.push(`土壤3层湿度 ${sensorData.soil3}% 超出合理范围 (0到100%)`);
+            }
+            
+            // 土壤湿度层次关系验证
+            if (sensorData.soil1 !== null && sensorData.soil2 !== null && sensorData.soil1 < sensorData.soil2) {
+                errors.push(`土壤1层湿度(${sensorData.soil1}%)应大于土壤2层湿度(${sensorData.soil2}%)`);
+            }
+            if (sensorData.soil2 !== null && sensorData.soil3 !== null && sensorData.soil2 < sensorData.soil3) {
+                errors.push(`土壤2层湿度(${sensorData.soil2}%)应大于土壤3层湿度(${sensorData.soil3}%)`);
+            }
+            
+            // 温湿度关系验证
+            if (sensorData.temp !== null && sensorData.humidity !== null) {
+                if (sensorData.temp > 35 && sensorData.humidity > 80) {
+                    errors.push(`高温高湿组合不合理：温度${sensorData.temp}℃，湿度${sensorData.humidity}%`);
+                }
+                if (sensorData.temp < 0 && sensorData.humidity > 90) {
+                    errors.push(`低温高湿组合不合理：温度${sensorData.temp}℃，湿度${sensorData.humidity}%`);
+                }
+            }
+            
+            if (errors.length > 0) {
+                swal({
+                    title: "传感器数据验证失败",
+                    text: errors.join('\n'),
+                    type: "warning",
+                    confirmButtonText: "确定"
+                });
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // 价格销量数据验证函数
+        function validateProductData(productData) {
+            const errors = [];
+            
+            // 价格验证 (0.1到20元/斤)
+            if (productData.price < 0.1 || productData.price > 20) {
+                errors.push(`价格 ${productData.price} 元/斤 超出合理范围 (0.1到20元/斤)`);
+            }
+            
+            // 销量验证 (1到5000吨)
+            if (productData.sales < 1 || productData.sales > 5000) {
+                errors.push(`销量 ${productData.sales} 吨 超出合理范围 (1到5000吨)`);
+            }
+            
+            // 产量验证 (1到5000吨)
+            if (productData.yield < 1 || productData.yield > 5000) {
+                errors.push(`产量 ${productData.yield} 吨 超出合理范围 (1到5000吨)`);
+            }
+            
+            // 收成天数验证 (30到300天)
+            if (productData.harvestDays < 30 || productData.harvestDays > 300) {
+                errors.push(`收成天数 ${productData.harvestDays} 天 超出合理范围 (30到300天)`);
+            }
+            
+            // 产量应大于等于销量
+            if (productData.yield < productData.sales) {
+                errors.push(`产量(${productData.yield}吨)应大于等于销量(${productData.sales}吨)`);
+            }
+            
+            // 根据具体农产品验证收成天数
+            const productDays = {
+                '水稻': { min: 110, max: 140 },
+                '小麦': { min: 100, max: 130 },
+                '玉米': { min: 90, max: 120 },
+                '大豆': { min: 120, max: 150 },
+                '蔬菜': { min: 30, max: 90 },
+                '水果': { min: 120, max: 240 }
+            };
+            
+            const range = productDays[productData.name] || { min: 30, max: 300 };
+            if (productData.harvestDays < range.min || productData.harvestDays > range.max) {
+                errors.push(`${productData.name}的收成天数应在${range.min}-${range.max}天范围内`);
+            }
+            
+            // 根据农产品验证价格范围
+            const productPrice = {
+                '水稻': { min: 1.5, max: 4.0 },
+                '小麦': { min: 1.8, max: 4.5 },
+                '玉米': { min: 1.2, max: 3.5 },
+                '大豆': { min: 2.5, max: 6.0 },
+                '蔬菜': { min: 0.8, max: 8.0 },
+                '水果': { min: 2.0, max: 15.0 }
+            };
+            
+            const priceRange = productPrice[productData.name] || { min: 0.1, max: 20 };
+            if (productData.price < priceRange.min || productData.price > priceRange.max) {
+                errors.push(`${productData.name}的价格应在${priceRange.min}-${priceRange.max}元/斤范围内`);
+            }
+            
+            // 根据农产品验证产量销量范围
+            const productVolume = {
+                '水稻': { min: 100, max: 3000 },
+                '小麦': { min: 100, max: 2500 },
+                '玉米': { min: 200, max: 4000 },
+                '大豆': { min: 50, max: 1500 },
+                '蔬菜': { min: 500, max: 5000 },
+                '水果': { min: 100, max: 2000 }
+            };
+            
+            const volumeRange = productVolume[productData.name] || { min: 1, max: 5000 };
+            if (productData.sales < volumeRange.min || productData.sales > volumeRange.max) {
+                errors.push(`${productData.name}的销量应在${volumeRange.min}-${volumeRange.max}吨范围内`);
+            }
+            if (productData.yield < volumeRange.min || productData.yield > volumeRange.max) {
+                errors.push(`${productData.name}的产量应在${volumeRange.min}-${volumeRange.max}吨范围内`);
+            }
+            
+            if (errors.length > 0) {
+                swal({
+                    title: "价格销量数据验证失败",
+                    text: errors.join('\n'),
+                    type: "warning",
+                    confirmButtonText: "确定"
+                });
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // 添加/更新数据
+        document.getElementById('addForm').onsubmit = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('province').value.trim();
+            const type = document.getElementById('cropType').value;
+            const output = parseFloat(document.getElementById('output').value);
+            if (!name || isNaN(output) || output <= 0) return;
+            
+            // 验证产量是否符合实际情况
+            if (!validateOutput(output, name, type)) {
+                return;
+            }
+            
+            if (DB_CONFIG.storageMode === 'database') {
+                // 数据库模式
+                const cropData = {
+                    name: name,
+                    type: type,
+                    output: output
+                };
+                
+                DB_API.saveCropData(cropData).then(result => {
+                    if (result && result.success) {
+                        renderTable();
+                        this.reset();
+                        swal({
+                            title: "操作成功",
+                            text: `省份 "${name}" 的农业数据已添加！`,
+                            type: "success",
+                            confirmButtonText: "确定"
+                        });
+                    } else {
+                        swal({
+                            title: "操作失败",
+                            text: result?.error || "保存数据失败",
+                            type: "error",
+                            confirmButtonText: "确定"
+                        });
+                    }
+                }).catch(error => {
+                    console.error('保存数据失败:', error);
+                    swal({
+                        title: "操作失败",
+                        text: "数据库连接失败，请检查网络连接或切换到本地存储模式",
+                        type: "error",
+                        confirmButtonText: "确定"
+                    });
+                });
+            } else {
+                // 本地存储模式
+                let data = getData();
+                const idx = data.findIndex(item => item.name === name);
+                if (idx > -1) {
+                    data[idx] = {name, type, output};
+                } else {
+                    data.push({name, type, output});
+                }
+                saveData(data);
+                renderTable();
+                this.reset();
+                swal({
+                    title: "操作成功",
+                    text: `省份 "${name}" 的农业数据已${idx > -1 ? '更新' : '添加'}！`,
+                    type: "success",
+                    confirmButtonText: "确定"
+                });
+            }
+        };
+        
+        // 作物类型表单提交
+        document.getElementById('cropTypeForm').onsubmit = function(e) {
+            e.preventDefault();
+            const newCropType = document.getElementById('newCropType').value.trim();
+            if (!newCropType) return;
+
+            let cropTypes = JSON.parse(localStorage.getItem('agri_crop_types') || '[]');
+            if (!cropTypes.includes(newCropType)) {
+                cropTypes.push(newCropType);
+                localStorage.setItem('agri_crop_types', JSON.stringify(cropTypes));
+                renderCropTypeList();
+                this.reset();
+                swal({
+                    title: "添加成功",
+                    text: `作物类型 "${newCropType}" 已成功添加！`,
+                    type: "success",
+                    confirmButtonText: "确定"
+                });
+            } else {
+                swal({
+                    title: "添加失败",
+                    text: "该作物类型已存在！",
+                    type: "error",
+                    confirmButtonText: "确定"
+                });
+            }
+        };
+
+        // 渲染作物类型列表
+        function renderCropTypeList() {
+            const cropTypes = JSON.parse(localStorage.getItem('agri_crop_types') || '[]');
+            const cropTypeListDiv = document.getElementById('cropTypeList');
+            cropTypeListDiv.innerHTML = ''; // Clear previous list
+            cropTypes.forEach((type, index) => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <span>${type}</span>
+                    <button class="admin-btn" style="margin-left: 8px; padding: 2px 6px; font-size: 0.8rem;" onclick="deleteCropType(${index})">删除</button>
+                `;
+                cropTypeListDiv.appendChild(div);
+            });
+            updateCropTypeSelect(); // 更新下拉框选项
+        }
+        
+        // 删除作物类型
+        window.deleteCropType = function(index) {
+            let cropTypes = JSON.parse(localStorage.getItem('agri_crop_types') || '[]');
+            const cropTypeName = cropTypes[index];
+            
+            swal({
+                title: "确认删除",
+                text: `确定要删除作物类型 "${cropTypeName}" 吗？`,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确定删除",
+                cancelButtonText: "取消",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            }, function(isConfirm) {
+                if (isConfirm) {
+                    cropTypes.splice(index, 1);
+                    localStorage.setItem('agri_crop_types', JSON.stringify(cropTypes));
+                    renderCropTypeList();
+                    swal({
+                        title: "删除成功",
+                        text: `作物类型 "${cropTypeName}" 已删除！`,
+                        type: "success",
+                        confirmButtonText: "确定"
+                    });
+                }
+            });
+        };
+        
+        // 更新作物类型下拉框
+        function updateCropTypeSelect() {
+            const cropTypeSelect = document.getElementById('cropType');
+            const customTypes = JSON.parse(localStorage.getItem('agri_crop_types') || '[]');
+            const defaultTypes = ['粮食', '蔬菜', '水果', '油料', '其他'];
+            const allTypes = [...defaultTypes, ...customTypes];
+            
+            // 保存当前选中的值
+            const currentValue = cropTypeSelect.value;
+            
+            // 清空并重新添加选项
+            cropTypeSelect.innerHTML = '';
+            allTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                cropTypeSelect.appendChild(option);
+            });
+            
+            // 恢复选中的值
+            if (currentValue && allTypes.includes(currentValue)) {
+                cropTypeSelect.value = currentValue;
+            }
+        }
+        
+        // 传感器表单提交
+        document.getElementById('sensorForm').onsubmit = function(e) {
+            e.preventDefault();
+            const selectedDate = document.getElementById('datePicker').value;
+            const temp = parseFloat(document.getElementById('temp').value) || null;
+            const humidity = parseFloat(document.getElementById('humidity').value) || null;
+            const sunlight = parseFloat(document.getElementById('sunlight').value) || null;
+            const soil1 = parseFloat(document.getElementById('soil1').value) || null;
+            const soil2 = parseFloat(document.getElementById('soil2').value) || null;
+            const soil3 = parseFloat(document.getElementById('soil3').value) || null;
+            
+            const sensorData = {temp, humidity, sunlight, soil1, soil2, soil3};
+            
+            // 验证传感器数据
+            if (!validateSensorData(sensorData)) {
+                return;
+            }
+            
+            if (DB_CONFIG.storageMode === 'database') {
+                // 数据库模式
+                DB_API.saveWeatherData(selectedDate, sensorData).then(result => {
+                    if (result && result.success) {
+                        renderSensorTable();
+                        this.reset();
+                        swal({
+                            title: "操作成功",
+                            text: `${selectedDate} 的传感器数据已保存！`,
+                            type: "success",
+                            confirmButtonText: "确定"
+                        });
+                    } else {
+                        swal({
+                            title: "操作失败",
+                            text: result?.error || "保存数据失败",
+                            type: "error",
+                            confirmButtonText: "确定"
+                        });
+                    }
+                }).catch(error => {
+                    console.error('保存传感器数据失败:', error);
+                    swal({
+                        title: "操作失败",
+                        text: "数据库连接失败，请检查网络连接或切换到本地存储模式",
+                        type: "error",
+                        confirmButtonText: "确定"
+                    });
+                });
+            } else {
+                // 本地存储模式
+                let data = getSensorData();
+                data[selectedDate] = sensorData;
+                saveSensorData(data);
+                renderSensorTable();
+                this.reset();
+                swal({
+                    title: "操作成功",
+                    text: `${selectedDate} 的传感器数据已保存！`,
+                    type: "success",
+                    confirmButtonText: "确定"
+                });
+            }
+        };
+        
+        // 价格销量表单提交
+        document.getElementById('productForm').onsubmit = function(e) {
+            e.preventDefault();
+            const selectedDate = document.getElementById('datePicker').value;
+            const name = document.getElementById('productName').value.trim();
+            const price = parseFloat(document.getElementById('price').value);
+            const sales = parseFloat(document.getElementById('sales').value);
+            const yield = parseFloat(document.getElementById('yield').value);
+            const harvestDays = parseInt(document.getElementById('harvestDays').value);
+            
+            if (!name || isNaN(price) || isNaN(sales) || isNaN(yield) || isNaN(harvestDays) || harvestDays <= 0) return;
+            
+            const productData = {name, price, sales, yield, harvestDays};
+            
+            // 验证价格销量数据
+            if (!validateProductData(productData)) {
+                return;
+            }
+            
+            let data = getProductData();
+            if (!data[selectedDate]) data[selectedDate] = [];
+            
+            const idx = data[selectedDate].findIndex(item => item.name === name);
+            if (idx > -1) {
+                data[selectedDate][idx] = productData;
+            } else {
+                data[selectedDate].push(productData);
+            }
+            saveProductData(data);
+            renderProductTable();
+            this.reset();
+            swal({
+                title: "操作成功",
+                text: `${selectedDate} 的 "${name}" 价格销量数据已${idx > -1 ? '更新' : '添加'}！`,
+                type: "success",
+                confirmButtonText: "确定"
+            });
+        };
+        
+        // 编辑行
+        window.editRow = function(idx) {
+            const data = getData();
+            const item = data[idx];
+            document.getElementById('province').value = item.name;
+            document.getElementById('cropType').value = item.type;
+            document.getElementById('output').value = item.output;
+        };
+        
+        // 编辑传感器行
+        window.editSensorRow = function() {
+            const data = getSensorData();
+            const selectedDate = document.getElementById('datePicker').value;
+            const item = data[selectedDate];
+            if (item) {
+                document.getElementById('temp').value = item.temp || '';
+                document.getElementById('humidity').value = item.humidity || '';
+                document.getElementById('sunlight').value = item.sunlight || '';
+                document.getElementById('soil1').value = item.soil1 || '';
+                document.getElementById('soil2').value = item.soil2 || '';
+                document.getElementById('soil3').value = item.soil3 || '';
+            }
+        };
+        
+        // 编辑价格销量行
+        window.editProductRow = function(idx) {
+            const data = getProductData();
+            const selectedDate = document.getElementById('datePicker').value;
+            const item = data[selectedDate][idx];
+            document.getElementById('productName').value = item.name;
+            document.getElementById('price').value = item.price;
+            document.getElementById('sales').value = item.sales;
+            document.getElementById('yield').value = item.yield;
+            document.getElementById('harvestDays').value = item.harvestDays;
+        };
+        
+        // 删除行
+        window.deleteRow = function(idx) {
+            if (DB_CONFIG.storageMode === 'database') {
+                // 数据库模式：idx 是作物类型名称
+                DB_API.deleteCropData(idx).then(result => {
+                    if (result && result.success) {
+                        renderTable();
+                        swal({
+                            title: "删除成功",
+                            text: `作物类型 "${idx}" 已删除！`,
+                            type: "success",
+                            confirmButtonText: "确定"
+                        });
+                    } else {
+                        swal({
+                            title: "删除失败",
+                            text: result?.error || "删除数据失败",
+                            type: "error",
+                            confirmButtonText: "确定"
+                        });
+                    }
+                }).catch(error => {
+                    console.error('删除数据失败:', error);
+                    swal({
+                        title: "删除失败",
+                        text: "数据库连接失败，请检查网络连接或切换到本地存储模式",
+                        type: "error",
+                        confirmButtonText: "确定"
+                    });
+                });
+            } else {
+                // 本地存储模式
+                let data = getData();
+                data.splice(idx, 1);
+                saveData(data);
+                renderTable();
+            }
+        };
+        
+        // 删除传感器行
+        window.deleteSensorRow = function() {
+            const selectedDate = document.getElementById('datePicker').value;
+            
+            if (DB_CONFIG.storageMode === 'database') {
+                // 数据库模式
+                DB_API.deleteWeatherData(selectedDate).then(result => {
+                    if (result && result.success) {
+                        renderSensorTable();
+                        swal({
+                            title: "删除成功",
+                            text: `${selectedDate} 的传感器数据已删除！`,
+                            type: "success",
+                            confirmButtonText: "确定"
+                        });
+                    } else {
+                        swal({
+                            title: "删除失败",
+                            text: result?.error || "删除数据失败",
+                            type: "error",
+                            confirmButtonText: "确定"
+                        });
+                    }
+                }).catch(error => {
+                    console.error('删除传感器数据失败:', error);
+                    swal({
+                        title: "删除失败",
+                        text: "数据库连接失败，请检查网络连接或切换到本地存储模式",
+                        type: "error",
+                        confirmButtonText: "确定"
+                    });
+                });
+            } else {
+                // 本地存储模式
+                let data = getSensorData();
+                delete data[selectedDate];
+                saveSensorData(data);
+                renderSensorTable();
+            }
+        };
+        
+        // 删除价格销量行
+        window.deleteProductRow = function(idx) {
+            let data = getProductData();
+            const selectedDate = document.getElementById('datePicker').value;
+            data[selectedDate].splice(idx, 1);
+            if (data[selectedDate].length === 0) {
+                delete data[selectedDate];
+            }
+            saveProductData(data);
+            renderProductTable();
+        };
+        
+        // 标签页切换
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.onclick = function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const tab = this.getAttribute('data-tab');
+                document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
+                document.getElementById('tab-' + tab).style.display = '';
+                
+                // 根据标签页重新渲染对应表格
+                if (tab === 'sensor') {
+                    renderSensorTable();
+                } else if (tab === 'product') {
+                    renderProductTable();
+                }
+            };
+        });
+        
+        // 日期选择器变化时重新渲染表格
+        const dateInput = document.getElementById('datePicker');
+        dateInput.onchange = function() {
+            renderSensorTable();
+            renderProductTable();
+        };
+        
+        // 日期选择器初始化为今天
+        function getTodayStr() {
+            const d = new Date();
+            return d.toISOString().slice(0,10);
+        }
+        dateInput.value = getTodayStr();
+        
+        // 实时时间显示
+        function updateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('showtime').textContent = 
+                `${year}年${month}月${day}日 ${hours}时${minutes}分${seconds}秒`;
+        }
+        setInterval(updateTime, 1000); // 每秒更新一次
+        updateTime(); // 页面加载时立即更新一次
+        
+        // 数据库接口配置
+        const DB_CONFIG = {
+            // 存储模式：'localStorage' 或 'database'
+            storageMode: 'localStorage',
+            
+            // 数据库连接配置
+            database: {
+                type: 'mysql',
+                host: 'localhost',
+                port: 3306,
+                name: 'myollama',
+                user: 'root',
+                password: ''
+            },
+             
+            // 数据库API接口配置
+            apiBaseUrl: 'http://localhost:3000/api',
+            apiEndpoints: {
+                // 作物数据 (对应crop表)
+                crop: '/crop',
+                // 天气数据 (对应weather表)
+                weather: '/weather'
+            },
+            
+            // API请求配置
+            requestConfig: {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer your-token-here'
+                }
+            }
+        };
+        
+        // 初始化
+        function init() {
+            loadDbConfig(); // 加载数据库配置
+            updateStorageModeDisplay(); // 更新存储模式显示
+            renderTable();
+            renderSensorTable();
+            renderProductTable();
+            renderCropTypeList();
+            updateCropTypeSelect();
+        }
+        
+        // 页面加载时初始化
+        init();
+        
+        // 农产品类型自动匹配
+        const productTypeMap = {
+            '水稻': '粮食',
+            '小麦': '粮食', 
+            '玉米': '粮食',
+            '大豆': '油料',
+            '蔬菜': '蔬菜',
+            '水果': '水果'
+        };
+        
+        // 农产品选择时自动设置类型
+        document.getElementById('productName').onchange = function() {
+            const selectedProduct = this.value;
+            const productTypeSelect = document.getElementById('cropType');
+            if (selectedProduct && productTypeMap[selectedProduct]) {
+                productTypeSelect.value = productTypeMap[selectedProduct];
+            }
+        };
+        
+        // 数据库连接配置函数
+        function loadDbConfig() {
+            const config = localStorage.getItem('db_config');
+            if (config) {
+                const savedConfig = JSON.parse(config);
+                DB_CONFIG.database = { ...DB_CONFIG.database, ...savedConfig };
+                
+                // 更新表单显示
+                document.getElementById('dbType').value = DB_CONFIG.database.type;
+                document.getElementById('dbHost').value = DB_CONFIG.database.host;
+                document.getElementById('dbPort').value = DB_CONFIG.database.port;
+                document.getElementById('dbName').value = DB_CONFIG.database.name;
+                document.getElementById('dbUser').value = DB_CONFIG.database.user;
+                document.getElementById('dbPassword').value = DB_CONFIG.database.password;
+            }
+            
+            // 更新存储模式显示
+            updateStorageModeDisplay();
+        }
+        
+        function saveDbConfig() {
+            const config = {
+                type: document.getElementById('dbType').value,
+                host: document.getElementById('dbHost').value,
+                port: parseInt(document.getElementById('dbPort').value),
+                name: document.getElementById('dbName').value,
+                user: document.getElementById('dbUser').value,
+                password: document.getElementById('dbPassword').value
+            };
+            
+            DB_CONFIG.database = config;
+            localStorage.setItem('db_config', JSON.stringify(config));
+            
+            swal({
+                title: "配置保存成功",
+                text: "数据库连接配置已保存！",
+                type: "success",
+                confirmButtonText: "确定"
+            });
+        }
+        
+        async function testDbConnection() {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.textContent = '测试连接中...';
+            statusElement.style.color = '#f7b500';
+            
+            try {
+                // 获取当前配置
+                const config = {
+                    type: document.getElementById('dbType').value,
+                    host: document.getElementById('dbHost').value,
+                    port: parseInt(document.getElementById('dbPort').value),
+                    name: document.getElementById('dbName').value,
+                    user: document.getElementById('dbUser').value,
+                    password: document.getElementById('dbPassword').value
+                };
+                
+                // 根据数据库类型选择不同的测试API
+                let testUrl = 'http://localhost:3000/api/db/test-mysql';
+                
+                const testResult = await fetch(testUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(config)
+                });
+                
+                if (testResult.ok) {
+                    const result = await testResult.json();
+                    statusElement.textContent = '连接成功 ✓';
+                    statusElement.style.color = '#52c41a';
+                    swal({
+                        title: "连接成功",
+                        text: `数据库连接测试通过！\n数据库版本: ${result.version || '未知'}\n连接时间: ${result.connectionTime || '未知'}ms`,
+                        type: "success",
+                        confirmButtonText: "确定"
+                    });
+                } else {
+                    const errorData = await testResult.json();
+                    throw new Error(errorData.message || '连接失败');
+                }
+            } catch (error) {
+                statusElement.textContent = '连接失败 ✗';
+                statusElement.style.color = '#ff4d4f';
+                swal({
+                    title: "连接失败",
+                    text: `错误信息: ${error.message}\n\n请检查:\n1. 数据库服务是否启动\n2. 连接参数是否正确\n3. 网络连接是否正常`,
+                    type: "error",
+                    confirmButtonText: "确定"
+                });
+            }
+        }
+        
+        function updateStorageModeDisplay() {
+            const displayElement = document.getElementById('storageModeDisplay');
+            const currentMode = DB_CONFIG.storageMode;
+            
+            displayElement.textContent = currentMode === 'localStorage' ? '本地存储' : '数据库';
+            displayElement.className = 'mode-value ' + currentMode;
+        }
+        
+        function toggleStorageMode() {
+            const currentMode = DB_CONFIG.storageMode;
+            const newMode = currentMode === 'localStorage' ? 'database' : 'localStorage';
+            DB_CONFIG.storageMode = newMode;
+            
+            // 更新显示
+            updateStorageModeDisplay();
+            
+            swal({
+                title: "存储模式切换",
+                text: `已切换到${newMode === 'database' ? '数据库' : '本地存储'}模式`,
+                type: "info",
+                confirmButtonText: "确定"
+            });
+            
+            // 重新加载数据
+            renderTable();
+            renderSensorTable();
+            renderProductTable();
+        }
+        
+        // 数据库API接口函数
+        const DB_API = {
+            // 通用API请求函数
+            async request(endpoint, method = 'GET', data = null) {
+                if (DB_CONFIG.storageMode === 'localStorage') {
+                    return null;
+                }
+                
+                try {
+                    const url = DB_CONFIG.apiBaseUrl + endpoint;
+                    const options = {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        ...(data && { body: JSON.stringify(data) })
+                    };
+                    
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || `API请求失败: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error('API请求错误:', error);
+                    swal({
+                        title: "数据库连接失败",
+                        text: `错误信息: ${error.message}\n正在使用本地存储模式`,
+                        type: "warning",
+                        confirmButtonText: "确定"
+                    });
+                    return null;
+                }
+            },
+            
+            // 作物数据API (对应crop表)
+            async getCropData() {
+                return await this.request('/crop');
+            },
+            
+            async saveCropData(data) {
+                // 转换为后端期望的格式
+                const cropData = {
+                    type: data.name, // 省份名作为作物类型
+                    day: data.harvestDays || 120, // 默认收成天数
+                    output: data.output,
+                    price: data.price || 0
+                };
+                return await this.request('/crop', 'POST', cropData);
+            },
+            
+            async updateCropData(type, data) {
+                const cropData = {
+                    day: data.harvestDays || 120,
+                    output: data.output,
+                    price: data.price || 0
+                };
+                return await this.request(`/crop/${encodeURIComponent(type)}`, 'PUT', cropData);
+            },
+            
+            async deleteCropData(type) {
+                return await this.request(`/crop/${encodeURIComponent(type)}`, 'DELETE');
+            },
+            
+            // 天气数据API (对应weather表)
+            async getWeatherData(date = null) {
+                const endpoint = date ? `/weather?date=${date}` : '/weather';
+                return await this.request(endpoint);
+            },
+            
+            async saveWeatherData(date, data) {
+                const weatherData = {
+                    temp: data.temp,
+                    wet: data.humidity,
+                    sun: data.sunlight,
+                    tsoil1: data.soil1,
+                    tsoil2: data.soil2,
+                    tsoil3: data.soil3
+                };
+                return await this.request('/weather', 'POST', { date, data: weatherData });
+            },
+            
+            async updateWeatherData(date, data) {
+                const weatherData = {
+                    temp: data.temp,
+                    wet: data.humidity,
+                    sun: data.sunlight,
+                    tsoil1: data.soil1,
+                    tsoil2: data.soil2,
+                    tsoil3: data.soil3
+                };
+                return await this.request(`/weather/${date}`, 'PUT', weatherData);
+            },
+            
+            async deleteWeatherData(date) {
+                return await this.request(`/weather/${date}`, 'DELETE');
+            }
+        };
+        
+    </script>
+</body>
+</html>

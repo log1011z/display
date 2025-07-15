@@ -1,0 +1,236 @@
+  /* =====================
+        左、右侧信息面板整体布局
+        ===================== */
+        .left-panel-group {
+            height: 850px;
+            width: 320px;
+            display: flex;
+            position: absolute;
+            top: 20px;
+            left: 10px;
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        /* =====================
+           左侧各个信息面板（湿度、温度、光照）样式
+        ===================== */
+        .humidity-panel, .temp-panel, .sun-panel  {
+            width: 100%;
+            background: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            margin-bottom: 10px;
+            flex:2;
+            backdrop-filter: blur(8px);
+        }
+        .weather-panel1{
+            width: 100%;
+            background: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            margin-bottom: 10px;
+            flex:1;
+            backdrop-filter: blur(8px);
+        }
+        /* =====================
+           面板标题样式
+        ===================== */
+        .panel-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+        /* =====================
+           今日数值区域样式
+        ===================== */
+        .today-value {
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .humidity-panel .value { color: #1890ff; }
+        .temp-panel .value { color: #ff7e00; }
+        .sun-panel .value { color: #f7b500; }
+        .unit {
+            font-size: 12px;
+            color: #666;
+        }
+        /* =====================
+           描述文字样式
+        ===================== */
+        .desc {
+            font-size: 11px;
+            color: #666;
+            margin-top: 2px;
+            text-align: center;
+        }
+        /* =====================
+           折线图容器样式
+        ===================== */
+        .chart-container {
+            height: 130px;
+            margin-top: 2px;
+        }
+        /* =====================
+           右侧面板组布局
+        ===================== */
+        .right-panel-group {
+            height: 850px;
+            width: 320px;
+            display: flex;
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        /* =====================
+           右侧各个信息面板（土壤湿度、产量、收成天数）样式
+        ===================== */
+        .soil-panel, .yield-panel, .harvest-panel ,.weather-panel2 {
+            width: 100%;
+            background: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            margin-bottom: 10px;
+            flex:1;
+            backdrop-filter: blur(8px);
+        }
+        /* =====================
+           主地图容器位置调整
+        ===================== */
+        #main {
+            margin-left: 350px !important;
+            margin-right: 350px !important;
+        }
+        
+          /* ✅ 移除旧的 .showtime 样式，只保留这一段 */
+        .showtime {
+            /*margin-top: auto; !* 把它推到 .left-panel-group 的最底部 *!*/
+            margin-bottom: 10px;
+            padding: 12px;
+            font-size: 18px;
+            color: #333;
+            background: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            animation: pulse 2s infinite;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            width: 100%;
+        }
+        .showtime::before {
+            content:"🕒";
+            margin-right:10px;
+            font-size:1.5rem;
+          }
+
+        /* =====================
+           页面背景图
+        ===================== */
+
+
+        
+        .today-temp {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .temp-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff7e00;
+        }
+        .temp-unit {
+            font-size: 16px;
+            color: #666;
+        }
+        
+        /* =====================
+           农产品价格和销量展示样式
+        ===================== */
+        .product-stats {
+            width: 900px;
+            margin: -30px auto 5px auto; /* 向上移动20px */
+            background: rgba(255,255,255,0.8);
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            backdrop-filter: blur(8px);
+            
+        }
+        
+        .stats-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 12px 8px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .product-name {
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .price-section, .output-section {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .stat-icon {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 3px;
+        }
+        
+        .stat-value {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+        }

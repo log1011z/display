@@ -1,222 +1,103 @@
+<!-- 页面样式定义 -->
 <style>
-    * {
-        font-family: "Poppins", sans-serif;
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #282a37;
-        background-size: cover;
-        background-position: center;
-    }
-
-    .wrapper {
-        position: relative;
-        width: 400px;
-        height: 450px;
-        background: #3e404d;
-        border: 2px solid rgba(255, 255, 255, 0.5);
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(15px);
-    }
-
-    .wrapper:hover {
-        box-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
-        background: #46474e;
-    }
-
-    .wrapper h1 {
-        font-size: 2em;
-        color: #fff;
-        text-align: center;
-    }
-
-    .wrapper .input-box {
-        position: relative;
-        width: 310px;
-        margin: 30px 0;
-        border-bottom: 2px solid #fff;
-    }
-
-    .wrapper .input-box input {
-        width: 100%;
-        height: 50px;
-        background: transparent;
-        outline: none;
-        border: none;
-        font-size: 1em;
-        color: #fff;
-        padding: 0 40px 0 5px;
-    }
-
-    .wrapper .input-box label {
-        position: absolute;
-        top: 50%;
-        left: 5px;
-        transform: translateY(-50%);
-        font-size: 1em;
-        color: #fff;
-        pointer-events: none;
-        transition: 0.5s;
-    }
-
-    .wrapper .input-box input:focus ~ label,
-    .wrapper .input-box input:valid ~ label {
-        top: -5px;
-    }
-
-    .wrapper .input-box .icon {
-        position: absolute;
-        right: 8px;
-        color: #fff;
-        font-size: 1.2em;
-        line-height: 57px;
-    }
-
-    .wrapper .row {
-        margin: -15px 0 15px;
-        font-size: 0.9em;
-        color: #fff;
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .wrapper .row label {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .wrapper .row a {
-        color: #fff;
-        text-decoration: none;
-    }
-
-    .wrapper .options a:hover {
-        text-decoration: underline;
-    }
-
-    .wrapper .btn {
-        width: 100%;
-        height: 40px;
-        background: #fff;
-        outline: none;
-        border: none;
-        border-radius: 40px;
-        cursor: pointer;
-        font-size: 1em;
-        font-weight: 500;
-        color: #000;
-        margin-top: 10px;
-    }
-
-    .btn:hover {
-        background: #ffffea;
-    }
-
-    .wrapper .signup-link {
-        font-size: 0.9em;
-        color: #fff;
-        text-align: center;
-        margin: 25px 0 10px;
-    }
-
-    .wrapper .signup-link a {
-        color: #fff;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-    .wrapper .signup-link a:hover {
-        text-decoration: underline;
-    }
-
-    @media (max-width: 360px) {
-        .wrapper {
-            width: 100%;
-            height: 100vh;
-            border: none;
-            border-radius: 0px;
-        }
-
-        .wrapper .input-box {
-            width: 290px;
-        }
-
-        #img {
-            z-index: -90;
-        }
-    }
-
+   /* 页面主体样式 - 设置背景图片和居中布局 */
+   body {
+    background: url("{{ url_for('static',filename = 'img/login0.jpg')}}") no-repeat center center fixed;
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
 </style>
+<!-- 引入Font Awesome图标库 -->
 <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-/>
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <!-- 引入SweetAlert库 -->
+    <link href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css" rel="stylesheet">
+    <script src="{{ url_for('static',filename='js/sweetalert.min.js') }}"></script>
 
-<!--css file-->
-<link rel="stylesheet" href="css/a.css"/>
-</head>
-<body>
+  <head>
+    <title>登录</title>
+    <!-- 引入自定义CSS文件 -->
+    <link rel="stylesheet" href="{{url_for('static',filename='css/login.css')}}" />
+  </head>
+  <body>
+    
+     <!-- 时间模块 -->
+    <div class="showtime" id="showtime"></div>
 
-<div class="wrapper">
-    <form action="{{ url_for('login') }}" method="post">
-        <h1>Login</h1>
+    <!-- 登录表单容器 -->
+  <div class="wrapper">
+      <form action="#">
+        <h1>AgriSage登陆界面</h1>
         <div class="input-box">
-            <i class="fas fa-envelope icon"></i>
-            <input id="usernameInput" type="username" name="username" required/>
-            <label>Username</label>
+          <i class="fas fa-envelope icon"></i>
+          <input id="usernameInput"type="username" required />
+          <label>用户名</label>
         </div>
         <div class="input-box">
-            <i class="fas fa-lock icon"></i>
-            <input id="passwordInput" type="password" name="password" required/>
-            <label>Password</label>
+          <i class="fas fa-lock icon"></i>
+          <input id="passwordInput"type="password" required />
+          <label>密码</label>
         </div>
 
         <div class="row">
-
-
-            <a onclick="forgotman()">Forgot password?</a>
+          <a onclick="forgotman()">忘记密码？</a>
         </div>
 
-        <button onclick="loginBrungle()" class="btn">Login</button>
+        <button onclick="loginBrungle()" class="btn">登录</button>
 
         <div class="signup-link">
-            <p>Don't have an account? <a href="#">Create one.</a></p>
+          <p>没有账号? <a href="{{url_for('create')}}">创建一个</a></p>
         </div>
-    </form>
-</div>
-</body>
+      </form>
+    </div>
+  </body>
 </html>
+<!-- JavaScript功能代码 -->
 <script>
-    function forgotman() {
-        alert('请联系管理员重置密码');
-    }
-
-    // user passwords and stuff
-
-
+  // 忘记密码功能
+function forgotman() {
+    swal('提示', '请发送邮件至tanglingsha@qq.com申请重置密码', 'info');
+  }
+  
+  // 更新时间显示功能
+function updateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('showtime').textContent = 
+                `${year}年${month}月${day}日 ${hours}时${minutes}分${seconds}秒`;
+        }
+        setInterval(updateTime, 1000); // 每秒更新一次
+        updateTime(); // 页面加载时立即更新一次
+  
+  // user passwords and stuff
+  
+  
+  
+  
     // Admin
     const adminUser = "Admin";
     const adminPass = "Pass"
-
-    function loginBrungle() {
+  
+  // 登录验证功能
+  function loginBrungle() {
         event.preventDefault();
         var password = document.querySelector('#passwordInput').value;
         var username = document.querySelector('#usernameInput').value;
 
 
-        fetch('{{ url_for('login') }}', {
+        fetch("{{ url_for('login') }}", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -225,17 +106,18 @@
         })
             .then(response => response.json())
             .then(data => {
-                alert(data.message);
+
                 if (data.status === 'success') {
-                    window.location.href = '/get_temp'; // 后端返回跳转地址
+                    window.location.href = '/home'; // 后端返回跳转地址
                 } else {
                     // 如果登录失败，清空输入框
+                    swal('错误', '用户名错误', 'error');
                     document.querySelector('#usernameInput').value = '';
                     document.querySelector('#passwordInput').value = '';
                 }
             })
             .catch(() => {
-                alert('网络错误，请重试');
+                swal('网络错误，请重试','error');
             });
         return false;
     }
