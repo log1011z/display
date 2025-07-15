@@ -234,3 +234,32 @@
             font-weight: bold;
             color: #333;
         }
+
+  #logout-button {
+      position: fixed; /* 固定在视口位置，不随页面滚动 */
+      top: 25px;       /* 距离顶部25px */
+      right: 30px;     /* 距离右侧30px */
+      z-index: 9999;   /* 确保按钮在最上层 */
+
+      padding: 8px 16px; /* 内边距 */
+      background-color: #51ae05; /* 修改为浅蓝色 */
+      color: white;              /* 文字颜色保持白色 */
+      text-decoration: none;     /* 去除下划线 */
+      border-radius: 20px;         /* 圆角 */
+      font-size: 14px;           /* 字体大小 */
+      font-family: 'Microsoft YaHei', sans-serif; /* 字体 */
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4); /* 阴影 */
+      transition: all 0.3s ease; /* 过渡效果 */
+  }
+
+  #logout-button svg {
+      fill: white; /* 将 SVG 图标的填充色改为白色 */
+      vertical-align: middle; /* 使图标与文字垂直居中 */
+      margin-right: 5px; /* 图标与文字之间留一点间距 */
+  }
+
+  #logout-button:hover {
+      background-color: #3f8802; /* 鼠标悬浮时颜色略微加深 */
+      transform: scale(1.05);  /* 鼠标悬浮时轻微放大 */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  }

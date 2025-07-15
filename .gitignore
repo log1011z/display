@@ -18,3 +18,4 @@
 *.tmp
 # 忽略所有的编译输出
 *.class
+/datamake/

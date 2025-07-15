@@ -111,7 +111,7 @@ function updateTime() {
                     window.location.href = '/home'; // 后端返回跳转地址
                 } else {
                     // 如果登录失败，清空输入框
-                    swal('错误', '用户名错误', 'error');
+                    swal('错误', data.message, 'error');
                     document.querySelector('#usernameInput').value = '';
                     document.querySelector('#passwordInput').value = '';
                 }
