@@ -1,5 +1,40 @@
-  /* =====================
-        左、右侧信息面板整体布局
+        /* =====================
+   新增：背景图层样式，用于平滑交叉淡入淡出
+   ===================== */
+        .bg-layer {
+            position: fixed;
+            /* 固定位置，覆盖整个视口 */
+            top: 0;
+            left: 0;
+            width: 100vw;
+            /* 视口宽度 */
+            height: 100vh;
+            /* 视口高度 */
+            background-size: cover;
+            /* 背景图覆盖容器 */
+            background-position: center;
+            /* 背景图居中 */
+            background-repeat: no-repeat;
+            /* 背景图不重复 */
+            opacity: 0;
+            /* 默认隐藏 */
+            transition: opacity 1.5s ease-in-out;
+            /* 透明度平滑过渡，持续1.5秒 */
+            z-index: -1;
+            /* 确保在所有内容之下 */
+            pointer-events: none;
+            /* 确保不阻挡鼠标事件，让下层内容可点击 */
+        }
+
+        .bg-layer.active {
+            opacity: 1;
+            /* 活跃图层完全可见 */
+        }
+
+
+
+        /* =====================
+        左侧信息面板整体布局
         ===================== */
         .left-panel-group {
             height: 850px;
@@ -12,29 +47,34 @@
             flex-direction: column;
             justify-content: space-between;
         }
+
         /* =====================
            左侧各个信息面板（湿度、温度、光照）样式
         ===================== */
-        .humidity-panel, .temp-panel, .sun-panel  {
+        .humidity-panel,
+        .temp-panel,
+        .sun-panel {
             width: 100%;
-            background: rgba(255,255,255,0.7);
+            background: rgba(255, 255, 255, 0.7);
             border-radius: 12px;
             padding: 8px 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             margin-bottom: 10px;
-            flex:2;
+            flex: 2;
             backdrop-filter: blur(8px);
         }
-        .weather-panel1{
+
+        .weather-panel1 {
             width: 100%;
-            background: rgba(255,255,255,0.7);
+            background: rgba(255, 255, 255, 0.7);
             border-radius: 12px;
             padding: 8px 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             margin-bottom: 10px;
-            flex:1;
+            flex: 1;
             backdrop-filter: blur(8px);
         }
+
         /* =====================
            面板标题样式
         ===================== */
@@ -45,6 +85,7 @@
             margin-bottom: 6px;
             text-align: center;
         }
+
         /* =====================
            今日数值区域样式
         ===================== */
@@ -52,17 +93,29 @@
             text-align: center;
             margin-bottom: 6px;
         }
+
         .value {
             font-size: 20px;
             font-weight: bold;
         }
-        .humidity-panel .value { color: #1890ff; }
-        .temp-panel .value { color: #ff7e00; }
-        .sun-panel .value { color: #f7b500; }
+
+        .humidity-panel .value {
+            color: #1890ff;
+        }
+
+        .temp-panel .value {
+            color: #ff7e00;
+        }
+
+        .sun-panel .value {
+            color: #f7b500;
+        }
+
         .unit {
             font-size: 12px;
             color: #666;
         }
+
         /* =====================
            描述文字样式
         ===================== */
@@ -72,6 +125,7 @@
             margin-top: 2px;
             text-align: center;
         }
+
         /* =====================
            折线图容器样式
         ===================== */
@@ -79,6 +133,7 @@
             height: 130px;
             margin-top: 2px;
         }
+
         /* =====================
            右侧面板组布局
         ===================== */
@@ -89,23 +144,28 @@
             position: absolute;
             top: 20px;
             right: 35px;
-            z-index: 1000;
+            /* z-index: 1000; */
             flex-direction: column;
             justify-content: space-between;
         }
+
         /* =====================
            右侧各个信息面板（土壤湿度、产量、收成天数）样式
         ===================== */
-        .soil-panel, .yield-panel, .harvest-panel ,.weather-panel2 {
+        .soil-panel,
+        .yield-panel,
+        .harvest-panel,
+        .weather-panel2 {
             width: 100%;
-            background: rgba(255,255,255,0.7);
+            background: rgba(255, 255, 255, 0.7);
             border-radius: 12px;
             padding: 8px 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             margin-bottom: 10px;
-            flex:1;
+            flex: 1;
             backdrop-filter: blur(8px);
         }
+
         /* =====================
            主地图容器位置调整
         ===================== */
@@ -113,63 +173,120 @@
             margin-left: 350px !important;
             margin-right: 350px !important;
         }
-        
-          /* ✅ 移除旧的 .showtime 样式，只保留这一段 */
+
+        /* ✅ 移除旧的 .showtime 样式，只保留这一段 */
         .showtime {
-            /*margin-top: auto; !* 把它推到 .left-panel-group 的最底部 *!*/
             margin-bottom: 10px;
-            padding: 12px;
+            padding: 8px 12px;
             font-size: 18px;
             color: #333;
-            background: rgba(255,255,255,0.7);
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
             text-align: center;
             font-weight: bold;
             border: 1px solid rgba(255, 255, 255, 0.5);
             animation: pulse 2s infinite;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             width: 100%;
+            flex-shrink: 0;
+            flex: 0 0 auto;
+            /* 固定高度 */
         }
+
         .showtime::before {
-            content:"🕒";
-            margin-right:10px;
-            font-size:1.5rem;
-          }
+            content: "🕒";
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        /*退出按钮样式*/
+        #logout-button {
+            position: fixed;
+            /* 固定在视口位置，不随页面滚动 */
+            top: 25px;
+            /* 距离顶部25px */
+            right: 30px;
+            /* 距离右侧30px */
+            z-index: 9999;
+            /* 确保按钮在最上层 */
+
+            padding: 8px 16px;
+            /* 内边距 */
+            background-color: #51ae05;
+            /* 修改为浅蓝色 */
+            color: white;
+            /* 文字颜色保持白色 */
+            text-decoration: none;
+            /* 去除下划线 */
+            border-radius: 20px;
+            /* 圆角 */
+            font-size: 14px;
+            /* 字体大小 */
+            font-family: 'Microsoft YaHei', sans-serif;
+            /* 字体 */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            /* 阴影 */
+            transition: all 0.3s ease;
+            /* 过渡效果 */
+        }
+
+        #logout-button svg {
+            fill: white;
+            /* 将 SVG 图标的填充色改为白色 */
+            vertical-align: middle;
+            /* 使图标与文字垂直居中 */
+            margin-right: 5px;
+            /* 图标与文字之间留一点间距 */
+        }
+
+        #logout-button:hover {
+            background-color: #ff0000;
+            /* 鼠标悬浮时颜色略微加深 */
+            transform: scale(1.05);
+            /* 鼠标悬浮时轻微放大 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+
+
 
         /* =====================
            页面背景图
         ===================== */
 
 
-        
+
         .today-temp {
             text-align: center;
             margin-bottom: 20px;
         }
+
         .temp-value {
             font-size: 36px;
             font-weight: bold;
             color: #ff7e00;
         }
+
         .temp-unit {
             font-size: 16px;
             color: #666;
         }
-        
+
         /* =====================
            农产品价格和销量展示样式
         ===================== */
         .product-stats {
             width: 900px;
-            margin: -30px auto 5px auto; /* 向上移动20px */
-            background: rgba(255,255,255,0.8);
+            margin: -30px auto 5px auto;
+            /* 向上移动20px */
+            background: rgba(255, 255, 255, 0.8);
             border-radius: 12px;
             padding: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(8px);
-            
+
         }
-        
+
         .stats-title {
             font-size: 15px;
             font-weight: bold;
@@ -177,89 +294,61 @@
             text-align: center;
             margin-bottom: 12px;
         }
-        
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
         }
-        
+
         .stat-item {
             text-align: center;
             padding: 12px 8px;
-            background: rgba(255,255,255,0.6);
+            background: rgba(255, 255, 255, 0.6);
             border-radius: 8px;
-            border: 1px solid rgba(0,0,0,0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             transition: transform 0.2s;
         }
-        
+
         .stat-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
-        
+
         .product-name {
             font-size: 13px;
             font-weight: bold;
             color: #333;
             margin-bottom: 8px;
             padding-bottom: 6px;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
-        
+
         .stats-row {
             display: flex;
             justify-content: space-around;
             align-items: center;
         }
-        
-        .price-section, .output-section {
+
+        .price-section,
+        .output-section {
             flex: 1;
             text-align: center;
         }
-        
+
         .stat-icon {
             font-size: 18px;
             margin-bottom: 5px;
         }
-        
+
         .stat-label {
             font-size: 10px;
             color: #666;
             margin-bottom: 3px;
         }
-        
+
         .stat-value {
             font-size: 12px;
             font-weight: bold;
             color: #333;
         }
-
-  #logout-button {
-      position: fixed; /* 固定在视口位置，不随页面滚动 */
-      top: 25px;       /* 距离顶部25px */
-      right: 30px;     /* 距离右侧30px */
-      z-index: 9999;   /* 确保按钮在最上层 */
-
-      padding: 8px 16px; /* 内边距 */
-      background-color: #51ae05; /* 修改为浅蓝色 */
-      color: white;              /* 文字颜色保持白色 */
-      text-decoration: none;     /* 去除下划线 */
-      border-radius: 20px;         /* 圆角 */
-      font-size: 14px;           /* 字体大小 */
-      font-family: 'Microsoft YaHei', sans-serif; /* 字体 */
-      box-shadow: 0 2px 8px rgba(0,0,0,0.4); /* 阴影 */
-      transition: all 0.3s ease; /* 过渡效果 */
-  }
-
-  #logout-button svg {
-      fill: white; /* 将 SVG 图标的填充色改为白色 */
-      vertical-align: middle; /* 使图标与文字垂直居中 */
-      margin-right: 5px; /* 图标与文字之间留一点间距 */
-  }
-
-  #logout-button:hover {
-      background-color: #3f8802; /* 鼠标悬浮时颜色略微加深 */
-      transform: scale(1.05);  /* 鼠标悬浮时轻微放大 */
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  }
