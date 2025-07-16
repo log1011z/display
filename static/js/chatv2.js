@@ -6,13 +6,21 @@
  * 2. 在您想集成的HTML页面中添加 <script src="path/to/ai-plugin.js" defer></script>
  * 3. (可选) 通过在页面中定义 window.AI_PLUGIN_CONFIG 对象来覆盖默认配置。
  */
+
 (function () {
   // --- 1. 防止插件被重复加载 ---
   if (document.getElementById("aiAssistantWidgetContainer")) {
     console.warn("AgriGik already loaded.");
     return;
   }
+  // 注入 Sweetswal2
+  const swalScript = document.createElement("script");
+  swalScript.src = "/static/js/sweetalert.min.js";
+  document.head.appendChild(swalScript);
 
+  const swalScript2 = document.createElement("script");
+  swalScript2.src = "/static/js/sweetalert2.js";
+  document.head.appendChild(swalScript2);
   // --- 2. 默认配置 ---
   const defaultConfig = {
     ollamaBaseUrl: "http://localhost:11434",
@@ -1125,7 +1133,6 @@
      */
     window.deleteSession = async function (sessionId) {
       if (!confirm("确定要删除这个对话吗？")) return;
-
       try {
         // 从后端删除会话
         const response = await fetch(
@@ -1189,7 +1196,7 @@
         console.log("所有历史记录已清空");
       } catch (error) {
         console.error("清空历史记录失败:", error);
-        alert("清空历史记录失败，请重试");
+        swal("清空历史记录失败，请重试");
       }
     };
 
@@ -1224,7 +1231,7 @@
         console.log("历史记录已导出");
       } catch (error) {
         console.error("导出历史记录失败:", error);
-        alert("导出历史记录失败，请重试");
+        swal("导出历史记录失败，请重试");
       }
     };
 
