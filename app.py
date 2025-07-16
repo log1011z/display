@@ -169,23 +169,29 @@ def add_user_history(uid):
 # delete session
 @app.route("/users/<int:uid>/sessions/<string:session_id>", methods=["DELETE"])
 def delete_session(uid, session_id):
-    # 确保用户存在
-    user.query.get_or_404(uid)
-    # 删除属于该用户和该会话的所有记录
-    ChatHistory.query.filter_by(uid=uid, session_id=session_id).delete()
-    db.session.commit()
-    return jsonify(
-        {"message": f"Session {session_id} deleted successfully for user {uid}"}
-    )
+    try:
+        # 删除属于该用户和该会话的所有记录
+        ChatHistory.query.filter_by(uid=uid, session_id=session_id).delete()
+        db.session.commit()
+        return jsonify(
+            {"message": f"Session {session_id} deleted successfully for user {uid}"}
+        )
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 
 #  delete all history
 @app.route("/users/<int:uid>/history", methods=["DELETE"])
 def clear_all_user_history(uid):
-    user = user.query.get_or_404(uid)
-    ChatHistory.query.filter_by(uid=user.uid).delete()
-    db.session.commit()
-    return jsonify({"message": f"All history for user {user.username} cleared"})
+    try:
+        # 直接使用uid删除历史记录，不需要查询用户
+        ChatHistory.query.filter_by(uid=uid).delete()
+        db.session.commit()
+        return jsonify({"message": f"All history for user {uid} cleared"})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/logout")

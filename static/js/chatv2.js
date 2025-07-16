@@ -1196,7 +1196,7 @@
         console.log("所有历史记录已清空");
       } catch (error) {
         console.error("清空历史记录失败:", error);
-        swal("清空历史记录失败，请重试");
+        console.log("清空历史记录失败，请重试");
       }
     };
 
