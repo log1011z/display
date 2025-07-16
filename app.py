@@ -88,7 +88,7 @@ def page_not_found(error):
     return render_template("error-404.html"), 404
 
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["POST"])
 def login():
     res = request.get_json()
     username = res.get("username")
@@ -119,10 +119,27 @@ def login():
         return jsonify({"status": "error", "message": "用户名或密码错误"})
 
 
+# NOTE:by Sillycheese
+# fetch current userInfo
+@app.route("/current_user", methods=["GET"])
+def get_current_user():
+    if not session.get("logged_in"):
+        return jsonify({"status": "error", "message": "用户未登录"}), 401
+
+    return jsonify(
+        {
+            "status": "success",
+            "uid": session.get("uid"),
+            "utype": session.get("role"),
+            "username": session.get("username"),
+        }
+    )
+
+
 # check single all history
 @app.route("/users/<int:uid>/history", methods=["GET"])
 def get_user_history(uid):
-    user = user.query.get_or_404(uid)
+    user_info = user.query.get_or_404(uid)
     histories = (
         ChatHistory.query.filter_by(uid=uid)
         .order_by(ChatHistory.created_at.asc())
@@ -134,13 +151,13 @@ def get_user_history(uid):
 # add session
 @app.route("/users/<int:uid>/history", methods=["POST"])
 def add_user_history(uid):
-    user = user.query.get_or_404(uid)
+    user_info = user.query.get_or_404(uid)
     data = request.get_json()
     if not data or "message" not in data or "session_id" not in data:
         return jsonify({"error": "缺少 message 或 session_id"}), 400
 
     new_history = ChatHistory(
-        uid=user.uid,
+        uid=user_info.uid,
         message=data["message"],  # 前端会传来 JSON 字符串
         session_id=data["session_id"],
     )
