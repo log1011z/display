@@ -6,6 +6,7 @@
  * 2. 在您想集成的HTML页面中添加 <script src="path/to/ai-plugin.js" defer></script>
  * 3. (可选) 通过在页面中定义 window.AI_PLUGIN_CONFIG 对象来覆盖默认配置。
  */
+
 (function () {
   // --- 1. 防止插件被重复加载 ---
   if (document.getElementById("aiAssistantWidgetContainer")) {
@@ -1125,7 +1126,6 @@
      */
     window.deleteSession = async function (sessionId) {
       if (!confirm("确定要删除这个对话吗？")) return;
-
       try {
         // 从后端删除会话
         const response = await fetch(
