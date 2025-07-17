@@ -179,7 +179,6 @@ def delete_session(uid, session_id):
 #  delete all history
 @app.route("/users/<int:uid>/history", methods=["DELETE"])
 def clear_all_user_history(uid):
-    user = user.query.get_or_404(uid)
     ChatHistory.query.filter_by(uid=user.uid).delete()
     db.session.commit()
     return jsonify({"message": f"All history for user {user.username} cleared"})
