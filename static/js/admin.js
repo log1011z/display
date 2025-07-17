@@ -4,46 +4,10 @@ function logout() {
 }
 
 // 数据库配置
-let DB_CONFIG = JSON.parse(localStorage.getItem('dbConfig')) || {
+let DB_CONFIG = {
     dbType: 'mysql',
-    dbHost: 'localhost',
-    dbPort: '3306',
-    dbName: 'display', // 已修改为 'display'
-    dbUser: 'root',
-    dbPassword: '110110',
-    storageMode: 'database' // 默认数据库模式
+    storageMode: 'database'
 };
-
-// DOM 元素引用
-const dbHostInput = document.getElementById('dbHost');
-const dbPortInput = document.getElementById('dbPort');
-const dbNameInput = document.getElementById('dbName');
-const dbUserInput = document.getElementById('dbUser');
-const dbPasswordInput = document.getElementById('dbPassword');
-const storageModeSelect = document.getElementById('storageMode');
-const saveDbConfigBtn = document.getElementById('saveDbConfig');
-
-// 加载并显示配置
-function loadDbConfig() {
-    dbHostInput.value = DB_CONFIG.dbHost;
-    dbPortInput.value = DB_CONFIG.dbPort;
-    dbNameInput.value = DB_CONFIG.dbName;
-    dbUserInput.value = DB_CONFIG.dbUser;
-    dbPasswordInput.value = DB_CONFIG.dbPassword;
-    storageModeSelect.value = DB_CONFIG.storageMode;
-}
-
-// 保存配置
-saveDbConfigBtn.addEventListener('click', () => {
-    DB_CONFIG.dbHost = dbHostInput.value;
-    DB_CONFIG.dbPort = dbPortInput.value;
-    DB_CONFIG.dbName = dbNameInput.value;
-    DB_CONFIG.dbUser = dbUserInput.value;
-    DB_CONFIG.dbPassword = dbPasswordInput.value;
-    DB_CONFIG.storageMode = storageModeSelect.value;
-    localStorage.setItem('dbConfig', JSON.stringify(DB_CONFIG));
-    swal('成功', '数据库配置已保存！', 'success');
-});
 
 // API 接口对象
 const DB_API = {
@@ -149,7 +113,6 @@ function showTime() {
 async function listUsers() {
     const userTableBody = document.getElementById('userTable').getElementsByTagName('tbody')[0];
     userTableBody.innerHTML = '';
-    if (DB_CONFIG.storageMode === 'database') {
         try {
             const data = await DB_API.getUsers();
             data.forEach(user => {
@@ -167,9 +130,6 @@ async function listUsers() {
             console.error('获取用户列表失败:', error);
             swal('错误', `获取用户列表失败：${error.message}`, 'error');
         }
-    } else {
-        swal('信息', '本地存储模式下，用户管理功能未实现', 'info');
-    }
 }
 
 document.getElementById('userForm').onsubmit = async function (e) {
@@ -196,7 +156,6 @@ document.getElementById('userForm').onsubmit = async function (e) {
 
     const userData = { username, password, authority };
     // console.log(userData)
-    if (DB_CONFIG.storageMode === 'database') {
         try {
             await DB_API.saveUser(userData);
             swal('成功', '用户已保存/更新！', 'success');
@@ -206,9 +165,6 @@ document.getElementById('userForm').onsubmit = async function (e) {
             console.error('保存用户失败 (数据库模式):', error);
             swal('错误', `数据库操作失败：${error.message}`, 'error');
         }
-    } else {
-        swal('信息', '本地存储模式下，用户保存功能未实现', 'info');
-    }
 };
 
 function editUserRow(username, password, authority) {
@@ -226,7 +182,6 @@ async function deleteUserRow(username) {
         dangerMode: true,
     }).then(async (willDelete) => {
         if (willDelete) {
-            if (DB_CONFIG.storageMode === 'database') {
                 try {
                     await DB_API.deleteUser(username);
                     swal('成功', '用户删除成功！', 'success');
@@ -235,9 +190,6 @@ async function deleteUserRow(username) {
                     console.error('删除用户失败 (数据库模式):', error);
                     swal('错误', `数据库操作失败：${error.message}`, 'error');
                 }
-            } else {
-                swal('信息', '本地存储模式下，用户删除功能未实现', 'info');
-            }
         }
     });
 }
@@ -246,8 +198,6 @@ async function deleteUserRow(username) {
 async function renderAreaTable() {
     const areaTableBody = document.getElementById('areaTable').getElementsByTagName('tbody')[0];
     areaTableBody.innerHTML = '';
-
-    if (DB_CONFIG.storageMode === 'database') {
         try {
             const data = await DB_API.getAreaData();
             if (data && Array.isArray(data) && data.length > 0) {
@@ -270,9 +220,6 @@ async function renderAreaTable() {
             console.error('获取区域数据失败:', error);
             swal('错误', `获取区域数据失败：${error.message}`, 'error');
         }
-    } else {
-        swal('信息', '本地存储模式下，区域数据功能未实现', 'info');
-    }
 }
 
 document.getElementById('areaForm').onsubmit = async function (e) {
@@ -303,7 +250,6 @@ document.getElementById('areaForm').onsubmit = async function (e) {
 
     const areaData = { name: name, type: type, output: outputVal };
 
-    if (DB_CONFIG.storageMode === 'database') {
         try {
             await DB_API.saveAreaData(areaData);
             swal('成功', '区域数据已保存/更新！', 'success');
@@ -313,9 +259,6 @@ document.getElementById('areaForm').onsubmit = async function (e) {
             console.error('保存区域数据失败 (数据库模式):', error);
             swal('错误', `数据库操作失败：${error.message}`, 'error');
         }
-    } else {
-        swal('信息', '本地存储模式下，区域数据保存功能未实现', 'info');
-    }
 };
 
 function editAreaRow(name, type, outputVal) {
@@ -332,7 +275,6 @@ async function deleteAreaRow(name, type) {
         dangerMode: true,
     }).then(async (willDelete) => {
         if (willDelete) {
-            if (DB_CONFIG.storageMode === 'database') {
                 try {
                     await DB_API.deleteAreaData(name, type);
                     swal('成功', '区域数据删除成功！', 'success');
@@ -341,9 +283,6 @@ async function deleteAreaRow(name, type) {
                     console.error('删除区域数据失败 (数据库模式):', error);
                     swal('错误', `数据库操作失败：${error.message}`, 'error');
                 }
-            } else {
-                swal('信息', '本地存储模式下，区域数据删除功能未实现', 'info');
-            }
         }
     });
 }
@@ -352,7 +291,6 @@ async function deleteAreaRow(name, type) {
 async function renderWeatherTable() {
     const weatherTableBody = document.getElementById('weatherTable').getElementsByTagName('tbody')[0];
     weatherTableBody.innerHTML = '';
-    if (DB_CONFIG.storageMode === 'database') {
         try {
             const data = await DB_API.getWeatherData();
             // 后端 /get_weather GET 请求返回的是列表，例如 {date:[], temp:[], ...}
@@ -380,9 +318,6 @@ async function renderWeatherTable() {
             console.error('获取气象数据失败:', error);
             swal('错误', `获取气象数据失败：${error.message}`, 'error');
         }
-    } else {
-        swal('信息', '本地存储模式下，气象数据功能未实现', 'info');
-    }
 }
 
 // 气象数据表单提交处理
@@ -428,7 +363,6 @@ document.getElementById('weatherForm').onsubmit = async function (e) {
 
     const weatherData = { date, temp, wet, sun, tsoil1, tsoil2, tsoil3 };
 
-    if (DB_CONFIG.storageMode === 'database') {
         try {
             await DB_API.saveWeatherData(weatherData);
             swal('成功', '气象数据已保存/更新！', 'success');
@@ -438,13 +372,9 @@ document.getElementById('weatherForm').onsubmit = async function (e) {
             console.error('保存气象数据失败 (数据库模式):', error);
             swal('错误', `数据库操作失败：${error.message}`, 'error');
         }
-    } else {
-        swal('信息', '本地存储模式下，气象数据保存功能未实现', 'info');
-    }
 };
 
 async function editWeatherRow(date) {
-    if (DB_CONFIG.storageMode === 'database') {
         try {
             // 获取所有数据，然后找到特定日期的数据
             const response = await DB_API.getWeatherData();
@@ -469,9 +399,6 @@ async function editWeatherRow(date) {
             console.error('编辑时获取气象数据失败 (数据库模式):', error);
             swal('错误', `获取数据失败：${error.message}`, 'error');
         }
-    } else {
-        swal('信息', '本地存储模式下，气象数据编辑功能未实现', 'info');
-    }
 }
 
 async function deleteWeatherRow(date) {
@@ -483,7 +410,6 @@ async function deleteWeatherRow(date) {
         dangerMode: true,
     }).then(async (willDelete) => {
         if (willDelete) {
-            if (DB_CONFIG.storageMode === 'database') {
                 try {
                     await DB_API.deleteWeatherData(date);
                     swal('成功', '气象数据删除成功！', 'success');
@@ -492,9 +418,6 @@ async function deleteWeatherRow(date) {
                     console.error('删除气象数据失败 (数据库模式):', error);
                     swal('错误', `数据库操作失败：${error.message}`, 'error');
                 }
-            } else {
-                swal('信息', '本地存储模式下，气象数据删除功能未实现', 'info');
-            }
         }
     });
 }
@@ -503,7 +426,6 @@ async function deleteWeatherRow(date) {
 async function renderCropTable() {
     const cropTableBody = document.getElementById('cropTable').getElementsByTagName('tbody')[0];
     cropTableBody.innerHTML = '';
-    if (DB_CONFIG.storageMode === 'database') {
         try {
             const data = await DB_API.getCropData();
             // 后端 /get_crop GET 请求返回的是列表，例如 {type:[], price:[], ...}
@@ -530,9 +452,6 @@ async function renderCropTable() {
             console.error('获取农产品数据失败:', error);
             swal('错误', `获取农产品数据失败：${error.message}`, 'error');
         }
-    } else {
-        swal('信息', '本地存储模式下，农产品数据功能未实现', 'info');
-    }
 }
 
 // 农产品数据表单提交处理
@@ -618,7 +537,6 @@ document.getElementById('cropForm').onsubmit = async function (e) {
 
     const cropData = { type, price, buy, output, grown, day };
 
-    if (DB_CONFIG.storageMode === 'database') {
         try {
             await DB_API.saveCropData(cropData);
             swal('成功', '农产品数据已保存/更新！', 'success');
@@ -628,13 +546,9 @@ document.getElementById('cropForm').onsubmit = async function (e) {
             console.error('保存农产品数据失败 (数据库模式):', error);
             swal('错误', `数据库操作失败：${error.message}`, 'error');
         }
-    } else {
-        swal('信息', '本地存储模式下，农产品数据保存功能未实现', 'info');
-    }
 };
 
 async function editCropRow(type) {
-    if (DB_CONFIG.storageMode === 'database') {
         try {
             const response = await DB_API.getCropData(); // 获取所有数据，然后找到特定类型的数据
             const index = response.type.findIndex(t => t === type);
@@ -652,9 +566,6 @@ async function editCropRow(type) {
             console.error('编辑时获取农产品数据失败 (数据库模式):', error);
             swal('错误', `获取数据失败：${error.message}`, 'error');
         }
-    } else {
-        swal('信息', '本地存储模式下，农产品数据编辑功能未实现', 'info');
-    }
 }
 
 async function deleteCropRow(type) {
@@ -666,7 +577,6 @@ async function deleteCropRow(type) {
         dangerMode: true,
     }).then(async (willDelete) => {
         if (willDelete) {
-            if (DB_CONFIG.storageMode === 'database') {
                 try {
                     await DB_API.deleteCropData(type);
                     swal('成功', '农产品数据删除成功！', 'success');
@@ -675,9 +585,6 @@ async function deleteCropRow(type) {
                     console.error('删除农产品数据失败 (数据库模式):', error);
                     swal('错误', `数据库操作失败：${error.message}`, 'error');
                 }
-            } else {
-                swal('信息', '本地存储模式下，农产品数据删除功能未实现', 'info');
-            }
         }
     });
 }
@@ -704,7 +611,6 @@ async function renderAllTables() {
 
 document.addEventListener('DOMContentLoaded', async () => {
     showTime();
-    loadDbConfig();
 
     // 隐藏所有板块
     document.querySelectorAll('.tab-content').forEach(content => {

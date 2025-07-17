@@ -303,32 +303,7 @@
         font-weight: bold;
     
     }
-    
-    .db-config-section {
-    
-        margin-bottom: 20px;
-    
-        padding: 20px;
-    
-        background: #f9f9f9;
-    
-        border-radius: 10px;
-    
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 
-        display:none;
-    
-    }
-    
-    .db-config-form {
-    
-    display: flex;
-    
-    flex-direction: column;
-    
-    gap: 10px;
-    
-    }
     
     .config-row {
     
