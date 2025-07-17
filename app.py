@@ -485,7 +485,7 @@ def get_users():
                 db.session.commit()
                 db.session.close()
             else:
-                user_record = user(username=username, password=password, anth=anth)
+                user_record = user(username=username, password=hashed_password, anth=authority)
                 with app.app_context():
                     with db.engine.connect() as conn:
                         db.session.merge(user_record)
