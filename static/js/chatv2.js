@@ -1189,7 +1189,7 @@
         console.log("所有历史记录已清空");
       } catch (error) {
         console.error("清空历史记录失败:", error);
-        console.log("清空历史记录失败，请重试");
+        alert("清空历史记录失败，请重试");
       }
     };
 
@@ -1224,7 +1224,7 @@
         console.log("历史记录已导出");
       } catch (error) {
         console.error("导出历史记录失败:", error);
-        console.log("导出历史记录失败，请重试");
+        alert("导出历史记录失败，请重试");
       }
     };
 
