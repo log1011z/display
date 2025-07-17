@@ -410,7 +410,7 @@
     const lucideScript = document.createElement("script");
     lucideScript.src = config.lucideIconUrl;
     lucideScript.onload = () => {
-      console.log("AI 助手: Lucide 图标库加载成功。");
+      // console.log("AI 助手: Lucide 图标库加载成功。");
       // 依赖加载后, 运行主逻辑
       runAiLogic();
     };
@@ -454,7 +454,7 @@
      */
     async function setCurrentUser(uid, utype = 0, uname = null) {
       currentUser = { uid, utype, uname };
-      console.log("当前用户:", currentUser);
+      // console.log("当前用户:", currentUser);
       await loadUserChatHistory();
     }
 
@@ -473,7 +473,7 @@
         // 检查响应状态
         if (!response.ok) {
           if (response.status === 401) {
-            console.log("用户未登录，使用默认用户配置");
+            // console.log("用户未登录，使用默认用户配置");
             // 用户未登录，使用默认用户配置
             await setCurrentUser(1, 0, "访客用户");
             return;
@@ -494,7 +494,7 @@
         }
 
         const userData = await response.json();
-        console.log("用户数据:", userData);
+        // console.log("用户数据:", userData);
 
         // 验证返回的数据结构
         if (!userData || typeof userData !== "object") {
@@ -512,11 +512,11 @@
           userData["username"]
         );
 
-        console.log("用户初始化成功:", {
-          uid: userData["uid"],
-          utype: userData["utype"],
-          username: userData["username"],
-        });
+        // console.log("用户初始化成功:", {
+        //   uid: userData["uid"],
+        //   utype: userData["utype"],
+        //   username: userData["username"],
+        // });
       } catch (error) {
         console.error("用户初始化失败:", error);
         // 如果用户初始化失败，可以使用默认用户或者提示用户重新登录
@@ -534,7 +534,7 @@
      */
     async function loadUserChatHistory() {
       if (!currentUser || !currentUser.uid) {
-        console.log("无有效用户，无法加载历史记录。");
+        // console.log("无有效用户，无法加载历史记录。");
         chatHistory = {};
         loadChatHistory(); // 渲染空列表
         return;
@@ -621,7 +621,7 @@
      * @param {object} messageObject - 消息对象，例如 { role: 'user', content: '你好', timestamp: 1234567890 }
      */
     async function saveMessageToBackend(messageObject) {
-      console.log(currentUser, currentUser.uid, currentSessionId);
+      // console.log(currentUser, currentUser.uid, currentSessionId);
       if (!currentUser || !currentUser.uid || !currentSessionId) {
         console.warn("无法保存消息：缺少用户信息或会话ID");
         return;
@@ -646,7 +646,7 @@
         }
 
         const savedMessage = await response.json();
-        console.log("消息已保存到后端:", savedMessage);
+        // console.log("消息已保存到后端:", savedMessage);
 
         // 立即更新本地历史记录
         updateLocalChatHistory(messageObject);
@@ -825,7 +825,7 @@
         currentSessionId = `session_${Date.now()}_${Math.random()
           .toString(36)
           .substr(2, 9)}`;
-        console.log("Mini chat创建新会话:", currentSessionId);
+        // console.log("Mini chat创建新会话:", currentSessionId);
       }
 
       getEl("miniExampleQuestions").style.display = "none";
@@ -987,7 +987,7 @@
         fileItem.remove();
       }
 
-      console.log(`文件 "${fileName}" 已删除`);
+      // console.log(`文件 "${fileName}" 已删除`);
     };
     function clearUploadedFiles() {
       currentFiles = [];
@@ -1029,7 +1029,7 @@
       // 刷新历史记录列表
       updateHistoryDisplay();
 
-      console.log("新会话已创建:", currentSessionId);
+      // console.log("新会话已创建:", currentSessionId);
     };
 
     /**
@@ -1059,7 +1059,7 @@
       lucide.createIcons();
       updateHistorySelection(sessionId);
 
-      console.log("会话已加载:", sessionId);
+      // console.log("会话已加载:", sessionId);
     };
 
     /**
@@ -1152,7 +1152,7 @@
         // 刷新历史记录列表
         loadChatHistory();
 
-        console.log("会话已删除:", sessionId);
+        // console.log("会话已删除:", sessionId);
       } catch (error) {
         console.error("删除会话失败:", error);
         alert("删除会话失败，请重试");
@@ -1186,7 +1186,7 @@
         // 创建新会话
         startNewChat();
 
-        console.log("所有历史记录已清空");
+        // console.log("所有历史记录已清空");
       } catch (error) {
         console.error("清空历史记录失败:", error);
         alert("清空历史记录失败，请重试");
@@ -1221,7 +1221,7 @@
         a.click();
         URL.revokeObjectURL(a.href);
 
-        console.log("历史记录已导出");
+        // console.log("历史记录已导出");
       } catch (error) {
         console.error("导出历史记录失败:", error);
         alert("导出历史记录失败，请重试");
@@ -1552,14 +1552,14 @@
     }
 
     async function callOllamaAPI(message, utype = 0, images = null) {
-      console.log("🚀 调用Ollama API:", {
-        url: `${OLLAMA_CONFIG.baseUrl}/api/generate`,
-        model: OLLAMA_CONFIG.model,
-        message: message,
-        hasImages: images && images.length > 0,
-      });
+      // console.log("🚀 调用Ollama API:", {
+      //   url: `${OLLAMA_CONFIG.baseUrl}/api/generate`,
+      //   model: OLLAMA_CONFIG.model,
+      //   message: message,
+      //   hasImages: images && images.length > 0,
+      // });
 
-      console.log(message);
+      // console.log(message);
 
       const requestBody = {
         model: OLLAMA_CONFIG.model,
@@ -1588,7 +1588,7 @@
           body: JSON.stringify(requestBody),
         });
 
-        console.log("📡 Ollama响应状态:", response.status);
+        // console.log("📡 Ollama响应状态:", response.status);
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -1599,7 +1599,7 @@
         }
 
         const data = await response.json();
-        console.log("✅ Ollama响应数据:", data);
+        // console.log("✅ Ollama响应数据:", data);
 
         return data.response || "抱歉，AI助手暂时无法回复。";
       } catch (error) {
@@ -1621,22 +1621,22 @@
       return await callOllamaAPI(message, currentUser.utype);
     }
     async function generateAIResponseWithFiles(message, files) {
-      console.log("📎 处理文件:", files.length, "个文件");
+      // console.log("📎 处理文件:", files.length, "个文件");
 
       const imagePromises = files
         .filter((f) => f.type.startsWith("image/"))
         .map((file) => {
-          console.log("🖼️ 处理图片文件:", file.name);
+          // console.log("🖼️ 处理图片文件:", file.name);
           return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => {
               const base64 = reader.result.split(",")[1];
-              console.log(
-                "✅ 图片转换完成:",
-                file.name,
-                "大小:",
-                base64.length
-              );
+              // console.log(
+              //   "✅ 图片转换完成:",
+              //   file.name,
+              //   "大小:",
+              //   base64.length
+              // );
               resolve(base64);
             };
             reader.onerror = (error) => {
@@ -1648,7 +1648,7 @@
         });
 
       const base64Images = await Promise.all(imagePromises);
-      console.log("📸 图片处理完成，共", base64Images.length, "张图片");
+      // console.log("📸 图片处理完成，共", base64Images.length, "张图片");
 
       return await callOllamaAPI(message, currentUser.utype, base64Images);
     }
@@ -1677,7 +1677,7 @@
     });
     window.addEventListener("beforeunload", () => {
       // 页面卸载时的清理工作，如果需要的话
-      console.log("页面即将关闭");
+      // console.log("页面即将关闭");
     });
 
     // 绑定UI元素事件
@@ -1740,7 +1740,7 @@
       });
     }
 
-    console.log("AI 助手插件初始化完成。");
+    // console.log("AI 助手插件初始化完成。");
   }
 
   // --- 8. 启动插件 ---

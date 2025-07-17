@@ -93,7 +93,7 @@ function logout() {
     // 		}
     // 	});
     // }
-    window.location.href = 'login.html';
+    window.location.href = '/logout';
 }
 
 
@@ -244,7 +244,7 @@ const MAP_API = {
     // 获取地图数据
     getMapData: async () => {
         try {
-            const response = await fetch('/api/map/data');
+            const response = await fetch('/get_area');
             const data = await response.json();
             return data;
         } catch (error) {
@@ -603,7 +603,7 @@ const HUMIDITY_API = {
     // 获取全部传感器数据
     getSensorData: async () => {
         try {
-            const response = await fetch('/api/humidity/all');
+            const response = await fetch('/get_weather');
             const data = await response.json();
             return data;
         } catch (error) {
@@ -627,7 +627,7 @@ const YIELD_API = {
     // 获取产量数据
     getYieldData: async () => {
         try {
-            const response = await fetch('/api/yield/data');
+            const response = await fetch('/get_crop');
             const data = await response.json();
             return data;
         } catch (error) {
@@ -650,7 +650,7 @@ const WEATHER_API = {
     // 获取天气数据
     getWeatherData: async () => {
         try {
-            const response = await fetch('/api/weather/data');
+            const response = await fetch('/get_temp');
             const data = await response.json();
             return data;
         } catch (error) {
@@ -925,7 +925,7 @@ const updateSunChart = async () => {
         yAxis: {
             type: 'value',
             min: 0,
-            max: 500,
+            max: 400,
             axisLabel: {
                 formatter: '{value}lux',
                 fontSize: 10
@@ -1091,7 +1091,7 @@ const updateSoilChart = async () => {
                 fontSize: 12
             },
             min: 0,
-            max: 40
+            max: 100
         },
         series
     };

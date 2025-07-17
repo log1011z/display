@@ -1,6 +1,6 @@
 function logout() {
-    // window.location.href = '/home';
-    window.open('/home', '_blank');
+    // window.location.href = '/home'; // 原始代码，已被注释
+    window.open('/home', '_blank'); // 打开新标签页
 }
 
 // 数据库配置
@@ -47,10 +47,10 @@ saveDbConfigBtn.addEventListener('click', () => {
 
 // API 接口对象
 const DB_API = {
-    API_BASE_URL: 'http://127.0.0.1:5000/',
+    API_BASE_URL: 'http://127.00.1:5000/',
 
     async request(endpoint, method = 'GET', data = null) {
-        const url = `${this.API_BASE_URL}${endpoint}`; // 修正了 BASE_URL 到 API_BASE_URL
+        const url = `${this.API_BASE_URL}${endpoint}`;
         const options = {
             method: method,
             headers: {
@@ -74,7 +74,6 @@ const DB_API = {
         }
     },
 
-    // 通用的数据获取接口（只用于GET请求）
     async getData(dataType, params = {}) {
         let endpoint = `get_${dataType}`;
         const queryParams = new URLSearchParams();
@@ -87,20 +86,16 @@ const DB_API = {
         return await this.request(endpoint, 'GET');
     },
 
-    // 用户管理
     async getUsers() {
         return await this.request('get_users', 'GET');
     },
     async saveUser(userData) {
-        // 后端 /update_user 似乎用于修改用户，/create 用于注册新用户。
-        // 假设这里统一用 /update_user 处理添加和更新，后端需要能识别。
         return await this.request('get_users', 'POST', userData);
     },
     async deleteUser(username) {
         return await this.request('delete_user', 'POST', { username: username });
     },
 
-    // 区域农业数据管理
     async getAreaData() {
         return await this.getData('area');
     },
@@ -111,7 +106,6 @@ const DB_API = {
         return await this.request('delete_area', 'POST', { prov: prov, type: type });
     },
 
-    // 气象数据管理
     async getWeatherData(date = null) {
         return await this.getData('weather', { date: date });
     },
@@ -122,7 +116,6 @@ const DB_API = {
         return await this.request('delete_weather', 'POST', { date: date });
     },
 
-    // 农产品数据管理
     async getCropData(date = null) {
         return await this.getData('crop', { date: date });
     },
@@ -133,18 +126,14 @@ const DB_API = {
         return await this.request('delete_crop', 'POST', { type: type });
     },
 
-    // 作物类型管理（如果后端没有独立API，此功能可能需要调整）
     async getCropTypes() {
-        // 从农产品数据中提取作物类型
         const cropData = await this.getCropData();
         if (cropData && Array.isArray(cropData.type)) {
-            return [...new Set(cropData.type)].map(type => ({ type: type })); // 返回唯一类型
+            return [...new Set(cropData.type)].map(type => ({ type: type }));
         }
         return [];
     },
-    // addCropType 函数在前端，如果后端没有对应独立接口，可能需要移除或调整其行为
     async addCropType(newType) {
-        // 假设添加作物类型就是添加一个最简的作物记录
         return await this.saveCropData({ type: newType, price: 0, buy: 0, output: 0, grown: 0, day: 0 });
     }
 };
@@ -193,9 +182,20 @@ document.getElementById('userForm').onsubmit = async function (e) {
         swal('错误', '用户名不能为空', 'error');
         return;
     }
+    // 验证密码长度
+    if (username.length < 2) {
+        swal('错误', '用户名至少需要2个字符', 'error');
+        return;
+    }
+
+    // 验证密码长度
+    if (password.length < 6) {
+        swal('错误', '密码至少需要6个字符', 'error');
+        return;
+    }
 
     const userData = { username, password, authority };
-
+    // console.log(userData)
     if (DB_CONFIG.storageMode === 'database') {
         try {
             await DB_API.saveUser(userData);
@@ -218,15 +218,14 @@ function editUserRow(username, password, authority) {
 }
 
 async function deleteUserRow(username) {
-    // 将 confirm 替换为 swal
     swal({
         title: '确认删除？',
         text: `确定要删除用户 "${username}" 吗？`,
         icon: 'warning',
-        buttons: ['取消', '确定'], // 设置按钮文本
-        dangerMode: true, // 启用危险模式，按钮会变红
+        buttons: ['取消', '确定'],
+        dangerMode: true,
     }).then(async (willDelete) => {
-        if (willDelete) { // 如果用户点击“确定”
+        if (willDelete) {
             if (DB_CONFIG.storageMode === 'database') {
                 try {
                     await DB_API.deleteUser(username);
@@ -246,23 +245,23 @@ async function deleteUserRow(username) {
 // 区域数据管理
 async function renderAreaTable() {
     const areaTableBody = document.getElementById('areaTable').getElementsByTagName('tbody')[0];
-    areaTableBody.innerHTML = ''; // 清空表格内容
+    areaTableBody.innerHTML = '';
 
     if (DB_CONFIG.storageMode === 'database') {
         try {
-            const data = await DB_API.getAreaData(); // 获取区域数据
+            const data = await DB_API.getAreaData();
             if (data && Array.isArray(data) && data.length > 0) {
                 data.forEach(item => {
                     const tr = areaTableBody.insertRow();
                     tr.innerHTML = `
-                <td>${item.name}</td>
-                <td>${item.type}</td>
-                <td>${item.output}</td>
-                <td>
-                    <button class="admin-btn" onclick="editAreaRow('${item.name}', '${item.type}', ${item.output})">编辑</button>
-                    <button class="admin-btn delete-btn" onclick="deleteAreaRow('${item.name}', '${item.type}')">删除</button>
-                </td>
-            `;
+                        <td>${item.name}</td>
+                        <td>${item.type}</td>
+                        <td>${item.output} 吨</td>
+                        <td>
+                            <button class="admin-btn" onclick="editAreaRow('${item.name}', '${item.type}', ${item.output})">编辑</button>
+                            <button class="admin-btn delete-btn" onclick="deleteAreaRow('${item.name}', '${item.type}')">删除</button>
+                        </td>
+                    `;
                 });
             } else {
                 areaTableBody.innerHTML = '<tr><td colspan="4">暂无数据</td></tr>';
@@ -279,13 +278,28 @@ async function renderAreaTable() {
 document.getElementById('areaForm').onsubmit = async function (e) {
     e.preventDefault();
     const name = document.getElementById('areaProv').value.trim();
-    const type = "粮食"; // 固定为粮食
+    const type = "粮食";
     const outputVal = parseFloat(document.getElementById('areaYield').value);
 
     if (!name || isNaN(outputVal)) {
         swal('错误', '请填写所有区域数据字段', 'error');
         return;
     }
+
+    // --- 产量验证 (单位：吨) ---
+    if (outputVal < 0) {
+        swal('错误', '产量不能为负值！', 'error');
+        return;
+    }
+    // 一个省份的粮食年产量通常在千万吨到亿吨级别。
+    // 例如，河南省年粮食产量约 6000-7000 万吨。
+    // 这里设定一个安全上限：2亿吨 (200,000,000)
+    const MAX_AREA_YIELD_TONS = 200000000;
+    if (outputVal > MAX_AREA_YIELD_TONS) {
+        swal('错误', `区域粮食产量不能超过 ${MAX_AREA_YIELD_TONS} 吨！请检查输入。`, 'error');
+        return;
+    }
+    // --- 结束产量验证 ---
 
     const areaData = { name: name, type: type, output: outputVal };
 
@@ -310,7 +324,6 @@ function editAreaRow(name, type, outputVal) {
 }
 
 async function deleteAreaRow(name, type) {
-    // 将 confirm 替换为 swal
     swal({
         title: '确认删除？',
         text: `确定要删除省份 "${name}", 作物类型 "${type}" 的区域数据吗？`,
@@ -349,12 +362,11 @@ async function renderWeatherTable() {
                     const itemDate = data.date[i];
                     tr.innerHTML = `
                         <td>${itemDate}</td>
-                        <td>${data.temp[i]}</td>
-                        <td>${data.wet[i]}</td>
-                        <td>${data.sun[i]}</td>
-                        <td>${data.tsoil1[i]}</td>
-                        <td>${data.tsoil2[i]}</td>
-                        <td>${data.tsoil3[i]}</td>
+                        <td>${data.temp[i]} °C</td>
+                        <td>${data.wet[i]} %</td>
+                        <td>${data.sun[i]} lux</td> <td>${data.tsoil1[i]} °C</td>
+                        <td>${data.tsoil2[i]} °C</td>
+                        <td>${data.tsoil3[i]} °C</td>
                         <td>
                             <button class="admin-btn" onclick="editWeatherRow('${itemDate}')">编辑</button>
                             <button class="admin-btn delete-btn" onclick="deleteWeatherRow('${itemDate}')">删除</button>
@@ -379,7 +391,7 @@ document.getElementById('weatherForm').onsubmit = async function (e) {
     const date = document.getElementById('weatherDate').value;
     const temp = parseFloat(document.getElementById('temp').value);
     const wet = parseFloat(document.getElementById('wet').value);
-    const sun = parseFloat(document.getElementById('sun').value);
+    const sun = parseFloat(document.getElementById('sun').value); // 日照强度
     const tsoil1 = parseFloat(document.getElementById('tsoil1').value);
     const tsoil2 = parseFloat(document.getElementById('tsoil2').value);
     const tsoil3 = parseFloat(document.getElementById('tsoil3').value);
@@ -388,6 +400,31 @@ document.getElementById('weatherForm').onsubmit = async function (e) {
         swal('错误', '请选择日期', 'error');
         return;
     }
+
+    // --- 气象数据验证 ---
+    // 温度 (temp): -50°C 到 60°C
+    if (isNaN(temp) || temp < -50 || temp > 60) {
+        swal('错误', '温度值不合理！范围应在 -50°C 到 60°C 之间。', 'error');
+        return;
+    }
+    // 湿度 (wet): 0% 到 100%
+    if (isNaN(wet) || wet < 0 || wet > 100) {
+        swal('错误', '湿度值不合理！范围应在 0% 到 100% 之间。', 'error');
+        return;
+    }
+    // 日照强度 (sun): 0 到 150000 lux (地表太阳辐射强度通常范围，晴天中午可达1000 W/m²以上)
+    if (isNaN(sun) || sun < 0 || sun > 150000) {
+        swal('错误', '日照强度不合理！范围应在 0 到 1500 W/m² 之间。', 'error');
+        return;
+    }
+    // 土壤湿度 (tsoil1, tsoil2, tsoil3): --0% 到 100%
+    if (isNaN(tsoil1) || tsoil1 < 0 || tsoil1 > 100 ||
+        isNaN(tsoil2) || tsoil2 < 0 || tsoil2 > 100 ||
+        isNaN(tsoil3) || tsoil3 < 0 || tsoil3 > 100) {
+        swal('错误', '土壤湿度值不合理！范围应在 -0% 到 100% 之间。', 'error');
+        return;
+    }
+    // --- 结束气象数据验证 ---
 
     const weatherData = { date, temp, wet, sun, tsoil1, tsoil2, tsoil3 };
 
@@ -438,7 +475,6 @@ async function editWeatherRow(date) {
 }
 
 async function deleteWeatherRow(date) {
-    // 将 confirm 替换为 swal
     swal({
         title: '确认删除？',
         text: `确定要删除日期 "${date}" 的气象数据吗？`,
@@ -476,11 +512,11 @@ async function renderCropTable() {
                     const tr = cropTableBody.insertRow();
                     tr.innerHTML = `
                         <td>${data.type[i]}</td>
-                        <td>${data.price[i]}</td>
-                        <td>${data.xiaoliang[i]}</td> 
-                        <td>${data.output[i]}</td>
-                        <td>${data.grown[i]}</td>
-                        <td>${data.day[i]}</td>
+                        <td>${data.price[i]} 元/斤</td>
+                        <td>${data.xiaoliang[i]} 吨</td>
+                        <td>${data.output[i]} 吨</td>
+                        <td>${data.grown[i]} 天</td>
+                        <td>${data.day[i]} 天</td>
                         <td>
                             <button class="admin-btn" onclick="editCropRow('${data.type[i]}')">编辑</button>
                             <button class="admin-btn delete-btn" onclick="deleteCropRow('${data.type[i]}')">删除</button>
@@ -504,15 +540,81 @@ document.getElementById('cropForm').onsubmit = async function (e) {
     e.preventDefault();
     const type = document.getElementById('cropName').value.trim();
     const price = parseFloat(document.getElementById('price').value);
-    const buy = parseInt(document.getElementById('buy').value);
-    const output = parseInt(document.getElementById('cropOutput').value);
-    const grown = parseInt(document.getElementById('grown').value);
+    const buy = parseInt(document.getElementById('buy').value); // 销量 (吨)
+    const output = parseInt(document.getElementById('cropOutput').value); // 产量 (吨)
+    const grown = parseInt(document.getElementById('grown').value); // 已种植天数
     const day = parseInt(document.getElementById('day').value); // 收获天数
 
     if (!type || isNaN(price) || isNaN(buy) || isNaN(output) || isNaN(grown) || isNaN(day)) {
         swal('错误', '请填写所有农产品数据字段', 'error');
         return;
     }
+
+    // --- 农产品数据验证 ---
+    // 价格 (price): 单位 元/公斤
+    if (price < 0) {
+        swal('错误', '价格不能为负值！', 'error');
+        return;
+    }
+    // 农产品价格（元/公斤）通常几十元，高价值农产品可能几百元。
+    // 设定一个较高的上限：1000 元/公斤 (防止误输入，如总价)
+    const MAX_PRICE_PER_KG = 1000;
+    if (price > MAX_PRICE_PER_KG) {
+        swal('错误', `价格不能超过 ${MAX_PRICE_PER_KG} 元/斤！请检查输入。`, 'error');
+        return;
+    }
+
+    // 销量 (buy): 单位 吨
+    if (buy < 0) {
+        swal('错误', '销量不能为负值！', 'error');
+        return;
+    }
+    // 单一农产品年销量（吨），可以从几百吨到几百万吨。
+    // 设定一个高上限：1 亿吨 (100,000,000)
+    const MAX_BUY_TONS = 100000000;
+    if (buy > MAX_BUY_TONS) {
+        swal('错误', `销量不能超过 ${MAX_BUY_TONS} 吨！请检查输入。`, 'error');
+        return;
+    }
+
+    // 产量 (output): 单位 吨
+    if (output < 0) {
+        swal('错误', '产量不能为负值！', 'error');
+        return;
+    }
+    // 单一农产品产量（吨），可以从几十吨到几百万吨。
+    // 设定一个高上限：1 亿吨 (100,000,000)
+    const MAX_CROP_OUTPUT_TONS = 100000000;
+    if (output > MAX_CROP_OUTPUT_TONS) {
+        swal('错误', `农产品产量不能超过 ${MAX_CROP_OUTPUT_TONS} 吨！请检查输入。`, 'error');
+        return;
+    }
+
+    // 收获天数 (day): 作物完成生长所需总天数，通常在一年内。
+    const MIN_DAY = 30; // 最小收获天数 30 天
+    const MAX_DAY = 730; // 2 年，约 730 天 (考虑到一些生长周期较长的作物)
+
+    if (day < MIN_DAY || day > MAX_DAY) {
+        swal('错误', `收获天数不合理！范围应在 ${MIN_DAY} 到 ${MAX_DAY} 天之间。`, 'error');
+        return;
+    }
+
+    // 已种植天数 (grown): 必须小于收获天数 (day)，且不能为负值。
+    if (grown < 0) {
+        swal('错误', '已种植天数不能为负值！', 'error');
+        return;
+    }
+    if (grown >= day) { // 核心逻辑：已种植天数必须严格小于收获天数
+        swal('错误', '已种植天数必须小于收获天数！', 'error');
+        return;
+    }
+    // 已种植天数也应有上限，与day的上限一致，因为不可能比收获天数还长
+    const MAX_GROWN_DAYS = MAX_DAY;
+    if (grown > MAX_GROWN_DAYS) {
+        swal('错误', `已种植天数不能超过 ${MAX_GROWN_DAYS} 天！请检查输入。`, 'error');
+        return;
+    }
+    // --- 结束农产品数据验证 ---
 
     const cropData = { type, price, buy, output, grown, day };
 
@@ -556,7 +658,6 @@ async function editCropRow(type) {
 }
 
 async function deleteCropRow(type) {
-    // 将 confirm 替换为 swal
     swal({
         title: '确认删除？',
         text: `确定要删除农产品 "${type}" 的数据吗？`,
@@ -584,7 +685,7 @@ async function deleteCropRow(type) {
 // 渲染作物类型列表（从农产品数据中获取）
 async function renderCropTypes() {
     const areaCropTypeSelect = document.getElementById('areaCropType');
-    areaCropTypeSelect.innerHTML = ''; // 清空现有选项
+    areaCropTypeSelect.innerHTML = '';
     // 固定为"粮食"类型
     const option = document.createElement('option');
     option.value = "粮食";
@@ -600,7 +701,6 @@ async function renderAllTables() {
     await renderWeatherTable();
     await renderCropTable();
 }
-
 
 document.addEventListener('DOMContentLoaded', async () => {
     showTime();
@@ -667,7 +767,6 @@ if (passwordInput && togglePassword) {
             passwordInput.setAttribute('type', newType);
 
             // 根据新的类型切换图标显示（例如，从“眼睛”到“锁”或“斜杠眼睛”）
-            // 您可以根据喜好修改这里的 emoji 或者 class 来切换图标
             this.textContent = (newType === 'password' ? '👁️' : '🔒'); // 切换图标文本
         }
     });

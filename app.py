@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
 import requests
 import datetime
 from climbpre import getdata
@@ -11,7 +12,7 @@ CORS(app)
 HOSTNAME = "127.0.0.1"
 PORT = 3306
 USERNAME = "root"
-PASSWORD = "123456"
+PASSWORD = "110110"
 DATABASE = "display"
 app.config["SQLALCHEMY_DATABASE_URI"] = (
     f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
@@ -96,13 +97,9 @@ def login():
     print(username, password)
     with app.app_context():
         with db.engine.connect() as conn:
-            user_info = (
-                db.session.query(user)
-                .filter(user.username == username, user.password == password)
-                .first()
-            )
+            user_info = db.session.query(user).filter(user.username == username).first()
             db.session.close()
-        if user_info:
+        if user_info and check_password_hash(user_info.password, password):
             session["logged_in"] = True
             session["username"] = username
             session["uid"] = user_info.uid
@@ -219,13 +216,15 @@ def create():
         res = request.form
         username = res.get("username")
         password = res.get("password")
-        print(username, password)
+        # print(username, password)
         if db.session.query(user).filter(user.username == username).first():
             return jsonify({"status": "error", "message": "用户名已存在"})
         else:
-            new_user = user(username=username, password=password, anth=0)
+            hashed_password = generate_password_hash(password)
+            new_user = user(username=username, password=hashed_password, anth=0)
             db.session.add(new_user)
             db.session.commit()
+            db.session.close()
             return jsonify({"status": "success", "message": "注册成功"})
 
 
@@ -465,7 +464,7 @@ def get_users():
                     {
                         "uid": i.uid,
                         "username": i.username,
-                        "password": i.password,
+                        "password": '******',
                         "anth": i.anth,
                     }
                     for i in r
@@ -475,13 +474,14 @@ def get_users():
         res = request.get_json()
         username = res.get("username")
         password = res.get("password")
-        anth = res.get("anth", 0)
+        hashed_password = generate_password_hash(password)
+        authority = res.get("authority", 0)
         try:
             r = db.session.query(user).filter(user.username == username).first()
             if r is not None:
                 r.username = username
-                r.password = password
-                r.anth = anth
+                r.password = hashed_password
+                r.anth = authority
                 db.session.commit()
                 db.session.close()
             else:
