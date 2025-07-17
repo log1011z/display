@@ -13,14 +13,7 @@
     console.warn("AgriGik already loaded.");
     return;
   }
-  // 注入 Sweetswal2
-  const swalScript = document.createElement("script");
-  swalScript.src = "/static/js/sweetalert.min.js";
-  document.head.appendChild(swalScript);
 
-  const swalScript2 = document.createElement("script");
-  swalScript2.src = "/static/js/sweetalert2.js";
-  document.head.appendChild(swalScript2);
   // --- 2. 默认配置 ---
   const defaultConfig = {
     ollamaBaseUrl: "http://localhost:11434",
@@ -1231,7 +1224,7 @@
         console.log("历史记录已导出");
       } catch (error) {
         console.error("导出历史记录失败:", error);
-        swal("导出历史记录失败，请重试");
+        console.log("导出历史记录失败，请重试");
       }
     };
 
