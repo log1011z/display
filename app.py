@@ -12,8 +12,8 @@ CORS(app)
 HOSTNAME = "127.0.0.1"
 PORT = 3306
 USERNAME = "root"
-PASSWORD = "123456"
-DATABASE = "agrisage"
+PASSWORD = "110110"
+DATABASE = "display"
 app.config["SQLALCHEMY_DATABASE_URI"] = (
     f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
 )
@@ -262,6 +262,7 @@ def get_weather():
         tsoil1 = res.get("tsoil1")
         tsoil2 = res.get("tsoil2")
         tsoil3 = res.get("tsoil3")
+        date = date.replace("2025", "2014")
         try:
             date_obj = datetime.datetime.strptime(date, "%Y-%m-%d").date()
             r = db.session.query(weather).filter(weather.date == date_obj).first()
@@ -290,7 +291,7 @@ def get_weather():
                         db.session.merge(weather_record)
                         db.session.commit()
                         db.session.close()
-                return jsonify({"status": "success", "message": "数据已保存"})
+            return jsonify({"status": "success", "message": "数据已保存"})
         except Exception as e:
             return jsonify({"status": "error", "message": f"数据保存失败: {str(e)}"})
 
