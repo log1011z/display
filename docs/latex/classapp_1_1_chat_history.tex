@@ -1,0 +1,37 @@
+\doxysection{app.\+Chat\+History Class Reference}
+\hypertarget{classapp_1_1_chat_history}{}\label{classapp_1_1_chat_history}\index{app.ChatHistory@{app.ChatHistory}}
+Inheritance diagram for app.\+Chat\+History\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classapp_1_1_chat_history}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classapp_1_1_chat_history_a1bb52669ce158de2c63ef252c425af7d}\label{classapp_1_1_chat_history_a1bb52669ce158de2c63ef252c425af7d} 
+{\bfseries to\+\_\+dict} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classapp_1_1_chat_history_a991ba2fd2ea643be17f970004ccee8e9}\label{classapp_1_1_chat_history_a991ba2fd2ea643be17f970004ccee8e9} 
+{\bfseries id} = db.\+Column(db.\+Integer, primary\+\_\+key=True)
+\item 
+\Hypertarget{classapp_1_1_chat_history_acd8632a185f5fc13d7cefaa5764135c3}\label{classapp_1_1_chat_history_acd8632a185f5fc13d7cefaa5764135c3} 
+{\bfseries session\+\_\+id} = db.\+Column(db.\+String(64), nullable=False, index=True)
+\item 
+\Hypertarget{classapp_1_1_chat_history_aec9976a38a597cb86154fd0b4dcbc976}\label{classapp_1_1_chat_history_aec9976a38a597cb86154fd0b4dcbc976} 
+{\bfseries uid} = db.\+Column(db.\+Integer, db.\+Foreign\+Key("{}user.\+uid"{}), nullable=False)
+\item 
+\Hypertarget{classapp_1_1_chat_history_a064e72a49ce1a6708c6b63a66f0d400d}\label{classapp_1_1_chat_history_a064e72a49ce1a6708c6b63a66f0d400d} 
+{\bfseries message} = db.\+Column(db.\+Text, nullable=False)
+\item 
+\Hypertarget{classapp_1_1_chat_history_aacb956a987e0eeebda44d485958d3a95}\label{classapp_1_1_chat_history_aacb956a987e0eeebda44d485958d3a95} 
+{\bfseries created\+\_\+at} = db.\+Column(db.\+Date\+Time, server\+\_\+default=db.\+func.\+now())
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+app.\+py\end{DoxyCompactItemize}

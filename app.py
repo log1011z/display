@@ -7,13 +7,14 @@ import datetime
 from climbpre import getdata
 from sqlalchemy import text, func
 
+
 app = Flask(__name__)
 CORS(app)
 HOSTNAME = "127.0.0.1"
 PORT = 3306
 USERNAME = "root"
 PASSWORD = "123456"
-DATABASE = "agrisage"
+DATABASE = "display"
 app.config["SQLALCHEMY_DATABASE_URI"] = (
     f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
 )
@@ -244,6 +245,7 @@ def get_weather():
                 db.session.close()
         return jsonify(
             {
+                # "date": [datetime.datetime.strptime(i.date, "%Y-%m-%d").strftime("%m-%d")for i in r],
                 "date": [i.date.strftime("%m-%d") for i in r],
                 "temp": [i.temp for i in r],
                 "wet": [i.wet for i in r],
@@ -262,6 +264,7 @@ def get_weather():
         tsoil1 = res.get("tsoil1")
         tsoil2 = res.get("tsoil2")
         tsoil3 = res.get("tsoil3")
+        date = date.replace("2025", "2014")
         try:
             date_obj = datetime.datetime.strptime(date, "%Y-%m-%d").date()
             r = db.session.query(weather).filter(weather.date == date_obj).first()
@@ -290,7 +293,7 @@ def get_weather():
                         db.session.merge(weather_record)
                         db.session.commit()
                         db.session.close()
-                return jsonify({"status": "success", "message": "数据已保存"})
+            return jsonify({"status": "success", "message": "数据已保存"})
         except Exception as e:
             return jsonify({"status": "error", "message": f"数据保存失败: {str(e)}"})
 
@@ -347,47 +350,38 @@ def get_crop():
 
 @app.route("/get_temp", methods=["GET", "POST"])
 def get_temp():
-    # url = "https://weather.cma.cn/api/now/54662"
-    # ua = {
-    #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0',
-    #     'Referer': 'https://weather.cma.cn/',
-    #     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
-    # }
-    # response = requests.get(url=url, headers=ua)
-    # response.encoding = 'utf-8'
-    # data = response.json()
-    data = {
-        "code": 0,
-        "data": {
-            "alarm": [
-                {
-                    "effective": "2025/07/14 15:32",
-                    "eventType": "11B06",
-                    "id": "21020041600000_20250714153200",
-                    "severity": "BLUE",
-                    "signallevel": "蓝色",
-                    "signaltype": "大风",
-                    "title": "大连市气象台发布大风蓝色预警[Ⅳ级/一般]",
-                    "type": "p0007004",
-                }
-            ],
-            "jieQi": "",
-            "lastUpdate": "2025/07/14 21:40",
-            "location": {"id": "54662", "name": "大连", "path": "中国, 辽宁, 大连"},
-            "now": {
-                "feelst": 28.6,
-                "humidity": 52,
-                "precipitation": 0,
-                "pressure": 989,
-                "temperature": 27.4,
-                "windDirection": "西北风",
-                "windDirectionDegree": 352,
-                "windScale": "微风",
-                "windSpeed": 2.8,
-            },
-        },
-        "msg": "success",
+    url = "https://weather.cma.cn/api/now/54662"
+    ua = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+        "Referer": "https://weather.cma.cn/",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
     }
+    response = requests.get(url=url, headers=ua)
+    response.encoding = "utf-8"
+    data = response.json()
+    if data is None:
+        data = {
+            "msg": "success",
+            "code": 0,
+            "data": {
+                "location": {"id": "54662", "name": "大连", "path": "中国, 辽宁, 大连"},
+                "now": {
+                    "precipitation": 1,
+                    "temperature": 25.6,
+                    "pressure": 995,
+                    "humidity": 90,
+                    "windDirection": "西南风",
+                    "windDirectionDegree": 217,
+                    "windSpeed": 1.9,
+                    "windScale": "微风",
+                    "feelst": 29.3,
+                },
+                "alarm": [],
+                "jieQi": "",
+                "lastUpdate": "2025/07/18 14:05",
+            },
+        }
+
     return jsonify(data)
 
 
@@ -463,7 +457,7 @@ def get_users():
                     {
                         "uid": i.uid,
                         "username": i.username,
-                        "password": '******',
+                        "password": "******",
                         "anth": i.anth,
                     }
                     for i in r
@@ -484,7 +478,9 @@ def get_users():
                 db.session.commit()
                 db.session.close()
             else:
-                user_record = user(username=username, password=hashed_password, anth=authority)
+                user_record = user(
+                    username=username, password=hashed_password, anth=authority
+                )
                 with app.app_context():
                     with db.engine.connect() as conn:
                         db.session.merge(user_record)
@@ -594,4 +590,4 @@ def delete_area():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
