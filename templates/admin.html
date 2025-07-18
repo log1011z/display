@@ -1,241 +1,263 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>AgriSage 后台管理</title>
-    <link rel="stylesheet" href="static/css/admin.css">
-    <link href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/admin.css" />
+    <link
+      href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css"
+      rel="stylesheet"
+    />
     <script src="{{ url_for('static', filename='js/sweetalert.min.js') }}"></script>
     <style>
-        body {
-            background: url('static/img/bg7.jpg') no-repeat center center fixed;
-            background-size: cover;
-        }
+      body {
+        background: url("static/img/bg7.jpg") no-repeat center center fixed;
+        background-size: cover;
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <script>
-        function logout() {
-            // window.location.href = '/home';
-            window.open('/home', '_blank');
-        }
+      function logout() {
+        // window.location.href = '/home';
+        window.open("/home", "_blank");
+      }
     </script>
 
     <div class="admin-container">
-        <div class="header">
-            <h1 class="admin-title">AgriSage 后台管理</h1>
-            <div id="showtime" class="showtime"></div>
-            <div id="fly" class="fly" onclick="logout()">主页</div>
+      <div class="header">
+        <h1 class="admin-title">AgriSage 后台管理</h1>
+        <div id="showtime" class="showtime"></div>
+        <div id="fly" class="fly" onclick="logout()">主页</div>
+      </div>
+
+      <div class="admin-panel">
+        <div class="tabs">
+          <button class="tab-btn" data-tab="user">用户管理</button>
+          <button class="tab-btn" data-tab="area">区域农业数据</button>
+          <button class="tab-btn" data-tab="weather">气象数据</button>
+          <button class="tab-btn" data-tab="crop">农产品数据</button>
         </div>
 
-
-        <div class="admin-panel">
-            <div class="tabs">
-                <button class="tab-btn" data-tab="user">用户管理</button>
-                <button class="tab-btn" data-tab="area">区域农业数据</button>
-                <button class="tab-btn" data-tab="weather">气象数据</button>
-                <button class="tab-btn" data-tab="crop">农产品数据</button>
-            </div>
-
-            <div id="tab-user" class="tab-content">
-                <h2>用户管理</h2>
-                <div class="admin-section">
-                    <h3>添加/修改用户</h3>
-                    <form id="userForm" class="admin-form">
-                        <label for="username">用户名:</label>
-                        <input type="text" id="username" required autocomplete="username">
-                        <label for="password">重置密码:</label>
-                        <div style="position: relative; display: flex; align-items: center; flex-grow: 1;">
-                            <input type="password" id="password" required style="flex-grow: 1; padding-right: 30px;" autocomplete="password">
-                            <span class="password-toggle" id="togglePassword"
-                                style="position: absolute; right: 10px; cursor: pointer; color: #228b22; font-size: 1.2em;">👁️</span>
-                        </div>
-                        <label for="authority">权限:</label>
-                        <select id="authority" required>
-                            <option value="0">普通用户</option>
-                            <option value="1">管理员</option>
-                        </select>
-                        <button type="submit" class="admin-btn">添加/更新用户</button>
-                    </form>
-                </div>
-                <div class="admin-section">
-                    <h3>用户列表</h3>
-                    <table id="userTable" class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>用户名</th>
-                                <th>权限</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="tab-area" class="tab-content">
-                <h2>区域农业数据管理</h2>
-                <div class="admin-section">
-                    <h3>添加/修改区域数据</h3>
-                    <form id="areaForm" class="admin-form">
-                        <label for="areaProv">省份:</label>
-                        <select id="areaProv" required>
-                            <option value="">请选择省份</option>
-                            <option value="北京">北京</option>
-                            <option value="天津">天津</option>
-                            <option value="河北">河北</option>
-                            <option value="山西">山西</option>
-                            <option value="内蒙古">内蒙古</option>
-                            <option value="辽宁">辽宁</option>
-                            <option value="吉林">吉林</option>
-                            <option value="黑龙江">黑龙江</option>
-                            <option value="上海">上海</option>
-                            <option value="江苏">江苏</option>
-                            <option value="浙江">浙江</option>
-                            <option value="安徽">安徽</option>
-                            <option value="福建">福建</option>
-                            <option value="江西">江西</option>
-                            <option value="山东">山东</option>
-                            <option value="河南">河南</option>
-                            <option value="湖北">湖北</option>
-                            <option value="湖南">湖南</option>
-                            <option value="广东">广东</option>
-                            <option value="广西">广西</option>
-                            <option value="海南">海南</option>
-                            <option value="重庆">重庆</option>
-                            <option value="四川">四川</option>
-                            <option value="贵州">贵州</option>
-                            <option value="云南">云南</option>
-                            <option value="西藏">西藏</option>
-                            <option value="陕西">陕西</option>
-                            <option value="甘肃">甘肃</option>
-                            <option value="青海">青海</option>
-                            <option value="宁夏">宁夏</option>
-                            <option value="新疆">新疆</option>
-                            <option value="香港">香港</option>
-                            <option value="澳门">澳门</option>
-                            <option value="台湾">台湾</option>
-                        </select>
-                        <label for="areaCropType">作物类型:</label>
-                        <input type="text" id="areaCropType" value="粮食" readonly>
-                        <label for="areaYield">产量 (吨):</label>
-                        <input type="number" id="areaYield" step="0.01" required>
-                        <button type="submit" class="admin-btn">添加/更新数据</button>
-                    </form>
-                </div>
-                <div class="admin-section">
-                    <h3>区域数据列表</h3>
-                    <table id="areaTable" class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>省份</th>
-                                <th>作物类型</th>
-                                <th>产量 (吨)</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="tab-weather" class="tab-content">
-                <h2>气象数据管理</h2>
-                <div class="admin-section">
-                    <h3>添加/修改气象数据</h3>
-                    <form id="weatherForm" class="admin-form">
-                        <label for="weatherDate">日期:</label>
-                        <input type="date" id="weatherDate" required>
-                        <label for="temp">平均气温 (°C):</label>
-                        <input type="number" id="temp" step="0.01" required>
-                        <label for="wet">平均湿度 (%):</label>
-                        <input type="number" id="wet" step="0.01" required>
-                        <div class="break"></div>
-                        <label for="sun">日照强度:</label>
-                        <input type="number" id="sun" step="0.01" required>
-                        <label for="tsoil1">土壤湿度1 (5cm):</label>
-                        <input type="number" id="tsoil1" step="0.01" required>
-                        <div class="break"></div>
-                        <label for="tsoil2">土壤湿度2 (10cm):</label>
-                        <input type="number" id="tsoil2" step="0.01" required>
-                        <label for="tsoil3">土壤湿度3 (15cm):</label>
-                        <input type="number" id="tsoil3" step="0.01" required>
-                        <button type="submit" class="admin-btn">添加/更新数据</button>
-                    </form>
-                </div>
-                <div class="admin-section">
-                    <h3>气象数据列表</h3>
-                    <table id="weatherTable" class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>日期</th>
-                                <th>平均气温</th>
-                                <th>平均湿度</th>
-                                <th>日照时数</th>
-                                <th>土壤湿度1</th>
-                                <th>土壤湿度2</th>
-                                <th>土壤湿度3</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="tab-crop" class="tab-content">
-                <h2>农产品数据管理</h2>
-                <div class="admin-section">
-                    <h3>添加/修改农产品数据</h3>
-                    <form id="cropForm" class="admin-form">
-                        <!-- 已移除日期输入栏 -->
-                        <label for="cropName">农产品类型:</label>
-                        <input type="text" id="cropName" required>
-                        <label for="price">价格 (元/斤):</label>
-                        <input type="number" id="price" step="0.01" required>
-                        <div class="break"></div>
-                        <label for="buy">销量 (吨):</label>
-                        <input type="number" id="buy" required>
-                        <label for="cropOutput">产量 (吨):</label>
-                        <input type="number" id="cropOutput" step="0.01" required>
-                        <div class="break"></div>
-                        <label for="grown">种植面积 (亩):</label>
-                        <input type="number" id="grown" required>
-                        <label for="day">生长期 (天):</label>
-                        <input type="number" id="day" required>
-                        <button type="submit" class="admin-btn">添加/更新数据</button>
-                    </form>
-                </div>
-                <div class="admin-section">
-                    <h3>农产品数据列表</h3>
-                    <table id="cropTable" class="admin-table">
-                        <thead>
-                            <tr>
-                                <!-- 已移除日期列 -->
-                                <th>农产品类型</th>
-                                <th>价格</th>
-                                <th>销量</th>
-                                <th>产量</th>
-                                <th>种植面积</th>
-                                <th>生长期</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
+        <div id="tab-user" class="tab-content">
+          <h2>用户管理</h2>
+          <div class="admin-section">
+            <h3>添加/修改用户</h3>
+            <form id="userForm" class="admin-form">
+              <label for="username">用户名:</label>
+              <input
+                type="text"
+                id="username"
+                required
+                autocomplete="username"
+              />
+              <label for="password">重置密码:</label>
+              <div
+                style="
+                  position: relative;
+                  display: flex;
+                  align-items: center;
+                  flex-grow: 1;
+                "
+              >
+                <input
+                  type="password"
+                  id="password"
+                  required
+                  style="flex-grow: 1; padding-right: 30px"
+                  autocomplete="password"
+                />
+                <span
+                  class="password-toggle"
+                  id="togglePassword"
+                  style="
+                    position: absolute;
+                    right: 10px;
+                    cursor: pointer;
+                    color: #228b22;
+                    font-size: 1.2em;
+                  "
+                  >👁️</span
+                >
+              </div>
+              <label for="authority">权限:</label>
+              <select id="authority" required>
+                <option value="0">普通用户</option>
+                <option value="1">管理员</option>
+              </select>
+              <button type="submit" class="admin-btn">添加/更新用户</button>
+            </form>
+          </div>
+          <div class="admin-section">
+            <h3>用户列表</h3>
+            <table id="userTable" class="admin-table">
+              <thead>
+                <tr>
+                  <th>用户名</th>
+                  <th>权限</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
+
+        <div id="tab-area" class="tab-content">
+          <h2>区域农业数据管理</h2>
+          <div class="admin-section">
+            <h3>添加/修改区域数据</h3>
+            <form id="areaForm" class="admin-form">
+              <label for="areaProv">省份:</label>
+              <select id="areaProv" required>
+                <option value="">请选择省份</option>
+                <option value="北京">北京</option>
+                <option value="天津">天津</option>
+                <option value="河北">河北</option>
+                <option value="山西">山西</option>
+                <option value="内蒙古">内蒙古</option>
+                <option value="辽宁">辽宁</option>
+                <option value="吉林">吉林</option>
+                <option value="黑龙江">黑龙江</option>
+                <option value="上海">上海</option>
+                <option value="江苏">江苏</option>
+                <option value="浙江">浙江</option>
+                <option value="安徽">安徽</option>
+                <option value="福建">福建</option>
+                <option value="江西">江西</option>
+                <option value="山东">山东</option>
+                <option value="河南">河南</option>
+                <option value="湖北">湖北</option>
+                <option value="湖南">湖南</option>
+                <option value="广东">广东</option>
+                <option value="广西">广西</option>
+                <option value="海南">海南</option>
+                <option value="重庆">重庆</option>
+                <option value="四川">四川</option>
+                <option value="贵州">贵州</option>
+                <option value="云南">云南</option>
+                <option value="西藏">西藏</option>
+                <option value="陕西">陕西</option>
+                <option value="甘肃">甘肃</option>
+                <option value="青海">青海</option>
+                <option value="宁夏">宁夏</option>
+                <option value="新疆">新疆</option>
+                <option value="香港">香港</option>
+                <option value="澳门">澳门</option>
+                <option value="台湾">台湾</option>
+              </select>
+              <label for="areaCropType">作物类型:</label>
+              <input type="text" id="areaCropType" value="粮食" readonly />
+              <label for="areaYield">产量 (吨):</label>
+              <input type="number" id="areaYield" step="0.01" required />
+              <button type="submit" class="admin-btn">添加/更新数据</button>
+            </form>
+          </div>
+          <div class="admin-section">
+            <h3>区域数据列表</h3>
+            <table id="areaTable" class="admin-table">
+              <thead>
+                <tr>
+                  <th>省份</th>
+                  <th>作物类型</th>
+                  <th>产量 (吨)</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-weather" class="tab-content">
+          <h2>气象数据管理</h2>
+          <div class="admin-section">
+            <h3>添加/修改气象数据</h3>
+            <form id="weatherForm" class="admin-form">
+              <label for="weatherDate">日期:</label>
+              <input type="date" id="weatherDate" required />
+              <label for="temp">平均气温 (°C):</label>
+              <input type="number" id="temp" step="0.01" required />
+              <label for="wet">平均湿度 (%):</label>
+              <input type="number" id="wet" step="0.01" required />
+              <div class="break"></div>
+              <label for="sun">日照强度:</label>
+              <input type="number" id="sun" step="0.01" required />
+              <label for="tsoil1">土壤湿度1 (5cm):</label>
+              <input type="number" id="tsoil1" step="0.01" required />
+              <div class="break"></div>
+              <label for="tsoil2">土壤湿度2 (10cm):</label>
+              <input type="number" id="tsoil2" step="0.01" required />
+              <label for="tsoil3">土壤湿度3 (15cm):</label>
+              <input type="number" id="tsoil3" step="0.01" required />
+              <button type="submit" class="admin-btn">添加/更新数据</button>
+            </form>
+          </div>
+          <div class="admin-section">
+            <h3>气象数据列表</h3>
+            <table id="weatherTable" class="admin-table">
+              <thead>
+                <tr>
+                  <th>日期</th>
+                  <th>平均气温</th>
+                  <th>平均湿度</th>
+                  <th>日照时数</th>
+                  <th>土壤湿度1</th>
+                  <th>土壤湿度2</th>
+                  <th>土壤湿度3</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-crop" class="tab-content">
+          <h2>农产品数据管理</h2>
+          <div class="admin-section">
+            <h3>添加/修改农产品数据</h3>
+            <form id="cropForm" class="admin-form">
+              <!-- 已移除日期输入栏 -->
+              <label for="cropName">农产品类型:</label>
+              <input type="text" id="cropName" required />
+              <label for="price">价格 (元/斤):</label>
+              <input type="number" id="price" step="0.01" required />
+              <div class="break"></div>
+              <label for="buy">销量 (吨):</label>
+              <input type="number" id="buy" required />
+              <label for="cropOutput">产量 (吨):</label>
+              <input type="number" id="cropOutput" step="0.01" required />
+              <div class="break"></div>
+              <label for="grown">生长天数:</label>
+              <input type="number" id="grown" required />
+              <label for="day">生长期 (天):</label>
+              <input type="number" id="day" required />
+              <button type="submit" class="admin-btn">添加/更新数据</button>
+            </form>
+          </div>
+          <div class="admin-section">
+            <h3>农产品数据列表</h3>
+            <table id="cropTable" class="admin-table">
+              <thead>
+                <tr>
+                  <!-- 已移除日期列 -->
+                  <th>农产品类型</th>
+                  <th>价格</th>
+                  <th>销量</th>
+                  <th>产量</th>
+                  <th>生长天数</th>
+                  <th>生长期</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
-</body>
-
+  </body>
 </html>
